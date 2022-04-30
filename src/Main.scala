@@ -13,7 +13,7 @@ import javafx.scene.transform.Rotate
 import javafx.stage.Stage
 
 import java.util.stream.Collectors
-import scala.::
+//import scala.::
 import scala.annotation.tailrec
 
 class Main extends Application {
@@ -285,21 +285,27 @@ class Main extends Application {
           case OcEmpty => OcEmpty
           case OcNode(coords, up_00, up_01, up_10, up_11, down_00, down_01, down_10, down_11) => {
             val placement: Placement = (coords._1, coords._2 * fact)
-            val smallerBox = helper.boxGenerator(coords) //caixa  tamanho original
-            val biggerBox = helper.boxGenerator(placement)
-            worldRoot.getChildren.add(biggerBox)
-            val scaledList = scaleList(fact, helper.getList(objects, smallerBox, 1))
+            val originalBox = helper.boxGenerator(coords) //caixa  tamanho original
+            val alteredBox = helper.boxGenerator(placement) // caixa ampliada ou reduzida
 
-            makeTree(placement, smallerBox, scaledList)
+            if(!worldRoot.getChildren.contains(alteredBox))
+              worldRoot.getChildren.add(alteredBox)
+
+            val scaledList = scaleList(fact, helper.getList(objects, originalBox, 1))
+
+            makeTree(placement, originalBox, scaledList)
           }
           case OcLeaf(sec : Section) => {
             val placement: Placement = (sec._1._1, sec._1._2 * fact)
-            val smallerBox = helper.boxGenerator(placement) //caixa  tamanho original
-            val biggerBox = helper.boxGenerator(placement)
-            worldRoot.getChildren.add(biggerBox)
-            val scaledList = scaleList(fact, helper.getList(objects, smallerBox, 1))
+            val originalBox = helper.boxGenerator(placement) //caixa  tamanho original
+            val alteredBox = helper.boxGenerator(placement)
 
-            makeTree(placement, smallerBox, scaledList)
+            if(!worldRoot.getChildren.contains(alteredBox))
+              worldRoot.getChildren.add(alteredBox)
+
+            val scaledList = scaleList(fact, helper.getList(objects, originalBox, 1))
+
+            makeTree(placement, alteredBox, scaledList)
           }
         }
 
@@ -357,16 +363,19 @@ class Main extends Application {
     def generateChild(listBoxes: List[Box], listObjects: List[Node]): List[Octree[Placement]] =
       listBoxes match {
         case Nil => Nil
-        case head :: tail =>
+        case head :: tail => {
           //nodo filho nao tem nenhuma lista contida então é empty
           val boxElements = helper.getList(listObjects,head,1)
           if (boxElements.isEmpty) OcEmpty :: generateChild(tail,listObjects)
           else {
+            println(s" 44. elemetos do world ${worldRoot.getChildren.size()}")
+            if(!worldRoot.getChildren.contains(head))
+              worldRoot.getChildren.add(head)
+
             //nodo filho tem elementos contidos entao vai verificar se os filhos desse filho intersectam alguma coisa
             val listNextBoxes = helper.getNextBoxes((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight)
             //se os filhos do nodo filho intersectarem entao o nodo filho é uma folha
             if (childNodesIntersect(listNextBoxes, listObjects)) {
-              worldRoot.getChildren.add(head.asInstanceOf[Node])
               OcLeaf(new Section(((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight),boxElements)) :: generateChild(tail,listObjects)
             } else {
               //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
@@ -377,10 +386,13 @@ class Main extends Application {
             }
           }
       }
+      }
 
 
     //Funcao para criar a OcTree como deve ser
     def makeTree(p: Placement, box : Box, list: List[Node]): Octree[Placement] = {
+
+      println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
 
       //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
@@ -409,12 +421,9 @@ class Main extends Application {
     //    //SECCOES COM COORDENADAS FIXAS QUE CONSTITUEM O 32 CUBO
     //    val size_cubo = wiredBox.getHeight / 2
     val placement1: Placement = ((0, 0, 0), 32.0)
-
-
     val tree = makeTree(placement1, wiredBox, objects)
-
-
-    println(s"33. OcTree ${scaleOctree(2.0, tree)}")
+    println(s" areveres somos:  $tree ")
+    //println(s"33. OcTree ${scaleOctree(2.0, tree)}")
 
     //example of bounding boxes (corresponding to the octree oct1) added manually to the world
 val b2 = new Box(8, 8, 8)

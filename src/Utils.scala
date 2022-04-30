@@ -75,7 +75,7 @@ object Utils {
       val objName = new_item(0)
       val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)","").split(",")
       val colourList = temp.toList.map(x => x.toInt)
-      print(s"colorList $colourList")
+//      print(s"colorList $colourList")
 
       if (new_item.size > 2) {
         objName match {
@@ -95,7 +95,7 @@ object Utils {
             boxArr.last.setScaleX(new_item(5).toDouble)
             boxArr.last.setScaleY(new_item(6).toDouble)
             boxArr.last.setScaleZ(new_item(7).toDouble)
-            cyArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
+            boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
 
         }
       }
@@ -117,10 +117,12 @@ object Utils {
             boxArr.last.setScaleX(1)
             boxArr.last.setScaleY(1)
             boxArr.last.setScaleZ(1)
-            cyArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
+            boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
 
         }
       }
+
+
 
 //  def readFromFile(file: String, materialList : List[Material]): List[Node] = {
 //    val bufferedSource = Source.fromFile(file)
@@ -236,8 +238,8 @@ object Utils {
 
     val size = placement._2 / 2.0
     val x = placement._1._1
-    val y = placement._1._1
-    val z = placement._1._1
+    val y = placement._1._2
+    val z = placement._1._3
 
     val box1: Box = boxGenerator(((x, y, z), size))
     val box2: Box = boxGenerator(((x, y + size, z), size))
