@@ -201,8 +201,6 @@ object Utils {
 
   //AUXILIAR
 
-  def
-
   //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO
   def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] =
     listObject match {

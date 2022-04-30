@@ -285,9 +285,8 @@ class Main extends Application {
           case OcEmpty => OcEmpty
           case OcNode(coords, up_00, up_01, up_10, up_11, down_00, down_01, down_10, down_11) => {
             val placement: Placement = (coords._1, coords._2 * fact)
-            val sec: Section = (coords, List())
-            val smallerBox = helper.boxGenerator(sec) //caixa  tamanho original
-            val biggerBox = helper.boxGenerator(new Section(placement, List()))
+            val smallerBox = helper.boxGenerator(coords) //caixa  tamanho original
+            val biggerBox = helper.boxGenerator(placement)
             worldRoot.getChildren.add(biggerBox)
             val scaledList = scaleList(fact, helper.getList(objects, smallerBox, 1))
 
@@ -295,8 +294,8 @@ class Main extends Application {
           }
           case OcLeaf(sec : Section) => {
             val placement: Placement = (sec._1._1, sec._1._2 * fact)
-            val smallerBox = helper.boxGenerator(sec) //caixa  tamanho original
-            val biggerBox = helper.boxGenerator(new Section(placement, List()))
+            val smallerBox = helper.boxGenerator(placement) //caixa  tamanho original
+            val biggerBox = helper.boxGenerator(placement)
             worldRoot.getChildren.add(biggerBox)
             val scaledList = scaleList(fact, helper.getList(objects, smallerBox, 1))
 
@@ -355,26 +354,26 @@ class Main extends Application {
     }
 
     //FUNCAO PARA GERAR TODAS AS OCTREES DAS 8 SECCOES QUE PROSSEGUEM DETERMINADO NODO
-    def generateChild(listBoxes: List[Box], lisObjects: List[Node]): List[Octree[Placement]] =
+    def generateChild(listBoxes: List[Box], listObjects: List[Node]): List[Octree[Placement]] =
       listBoxes match {
         case Nil => Nil
         case head :: tail =>
           //nodo filho nao tem nenhuma lista contida então é empty
-          if (head.isEmpty) OcEmpty :: generateChild(tail)
+          val boxElements = helper.getList(listObjects,head,1)
+          if (boxElements.isEmpty) OcEmpty :: generateChild(tail,listObjects)
           else {
             //nodo filho tem elementos contidos entao vai verificar se os filhos desse filho intersectam alguma coisa
-            val listNextBoxes = helper.getNextBoxes(head.getTranslateX)
+            val listNextBoxes = helper.getNextBoxes((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight)
             //se os filhos do nodo filho intersectarem entao o nodo filho é uma folha
-            if (childNodesIntersect(listNextSections, head._2)) {
-              val boxToPrint = helper.boxGenerator(head)
-              worldRoot.getChildren.add(boxToPrint)
-              OcLeaf(head)::generateChild(tail)
+            if (childNodesIntersect(listNextBoxes, listObjects)) {
+              worldRoot.getChildren.add(head.asInstanceOf[Node])
+              OcLeaf(new Section(((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight),boxElements)) :: generateChild(tail,listObjects)
             } else {
               //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
-              OcNode[Placement](new Placement((head.getTranslateX,head.getTranslateY, head.getTranslateZ),head.getWidth),generateChild(listNextSections).apply(0),generateChild(listNextSections).apply(1),
-                generateChild(listNextSections).apply(2),generateChild(listNextSections).apply(3),generateChild(listNextSections).apply(4),
-                generateChild(listNextSections).apply(5),generateChild(listNextSections).apply(6),generateChild(listNextSections).apply(7),
-              ):: generateChild(tail)
+              OcNode[Placement](new Placement((head.getTranslateX,head.getTranslateY, head.getTranslateZ),head.getWidth),generateChild(listNextBoxes,listObjects).apply(0),generateChild(listNextBoxes,listObjects).apply(1),
+                generateChild(listNextBoxes,listObjects).apply(2),generateChild(listNextBoxes,listObjects).apply(3),generateChild(listNextBoxes,listObjects).apply(4),
+                generateChild(listNextBoxes,listObjects).apply(5),generateChild(listNextBoxes,listObjects).apply(6),generateChild(listNextBoxes,listObjects).apply(7),
+              ):: generateChild(tail,listObjects)
             }
           }
       }
