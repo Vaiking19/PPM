@@ -202,14 +202,10 @@ class Main extends Application {
 
 
     stage.setScene(scene)
-    stage.show
 
-//    stage.close()
+
 //    stage.setScene(scene2)
 //    stage.show
-
-    //oct1 - example of an Octree[Placement] that contains only one Node (i.e. cylinder1)
-    //In case of difficulties to implement task T2 this octree can be used as input for tasks T3, T4 and T5
 
     //T4
 
@@ -220,33 +216,31 @@ class Main extends Application {
     //inseridos, segundo o fator fornecido (assumir somente a utilização dos
     //fatores 0.5 e 2 – para controlar a complexidade). A ampliação poderá resultar
     //numa octree com dimensão máxima superior a 32 unidades;
-    def scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = {
-      if (fact != 0.5 && fact != 2.0)
-        throw new IllegalArgumentException("factor invalido! :(((((((")
-      else {
 
-        oct match {
-          case OcEmpty => OcEmpty
-          case OcNode(coords, up_00, up_01, up_10, up_11, down_00, down_01, down_10, down_11) => {
-            val placement: Placement = (coords._1, coords._2 * fact)
-            val originalBox = boxGenerator(coords) //caixa  tamanho original
-            val alteredBox = boxGenerator(placement) // caixa ampliada ou reduzida
+    def callScaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = {
+      val placement:Placement = treePlacement(oct)
+      val newTree:Octree[Placement] = scaleOctree(fact,oct)
+
+           newTree match {
+             case OcEmpty => OcEmpty
+
+             case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
+            val alteredBox = boxGenerator(coords) // caixa ampliada ou reduzida
 
             if(!worldRoot.getChildren.contains(alteredBox))
               worldRoot.getChildren.add(alteredBox)
 
+            val originalBox = boxGenerator(placement) //caixa  tamanho original
             val scaledList = scaleList(fact, getList(objects, originalBox, 1))
 
-            makeTree(placement, originalBox, scaledList)
-          }
-          case OcLeaf(sec : Section) => {
-            val placement: Placement = (sec._1._1, sec._1._2 * fact)
-            val originalBox = boxGenerator(sec._1) //caixa  tamanho original
-            val alteredBox = boxGenerator(placement)
+          case OcLeaf(sec : Section) =>
+            val coords: Placement = (sec._1._1, sec._1._2 * fact)
+            val alteredBox = boxGenerator(coords)
 
             if(!worldRoot.getChildren.contains(alteredBox))
               worldRoot.getChildren.add(alteredBox)
 
+            val originalBox = boxGenerator(sec._1) //caixa  tamanho original
             val scaledList = scaleList(fact, getList(objects, originalBox, 1))
 
             makeTree(placement, alteredBox, scaledList)
@@ -254,7 +248,6 @@ class Main extends Application {
         }
 
       }
-    }
 
       def scaleList(fact : Double, list: List[Node]) : List[Node] = {
         list match{
@@ -346,7 +339,8 @@ class Main extends Application {
         println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
           val tree = makeTree(placement1, wiredBox, objects,worldRoot)
-          val scaledTree:Octree[Placement] = scaleOctree(userInputFact,tree)
+//          val scaledTree:Octree[Placement] =
+            callScaleOctree(userInputFact, tree)
 
         case 2 =>
           println(s" Please choose a format color for your tree:")
@@ -373,6 +367,7 @@ class Main extends Application {
 
     //USER TEXT INTERFACE
     mainChoose()
+    stage.show
 
 
 //

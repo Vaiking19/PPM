@@ -5,12 +5,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <ToggleButton fx:id="button1" layoutX="122.0" layoutY="76.0" mnemonicParsing="false" onMouseClicked="#onButton1Clicked" text="First" />
-      <Button fx:id="button2" layoutX="96.0" layoutY="33.0" mnemonicParsing="false" text="Cancel" />
-      <Label layoutX="25.0" layoutY="37.0" text="Button:" />
-      <Label layoutX="24.0" layoutY="80.0" text="Toggle Button:" />
-      <ToggleButton fx:id="button5" layoutX="179.0" layoutY="76.0" mnemonicParsing="false" onMouseClicked="#onButton1Clicked" text="Second" />
-      <Label layoutX="272.0" layoutY="120.0" text="Pl" />
-      <TextField layoutX="211.0" layoutY="158.0" />
+      <Label layoutX="126.0" layoutY="100.0" text="Please input the file name and click the &quot;Go!&quot; Button" />
+      <TextField layoutX="186.0" layoutY="131.0" />
    </children>
 </AnchorPane>

@@ -24,7 +24,7 @@ case class Utils() {
   def getNextBoxes(place: Placement): List[Box] = Utils.getNextBoxes(place)
   //def mapColourEffect(func: Color => Color, oct: Octree[Placement]): Octree[Placement] = Utils.mapColourEffect(func,oct)
   def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = Utils.childNodesIntersect(listBoxes, listObjects)
-
+  def scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = Utils.scaleOctree(fact, oct)
 
   def showPrompt(): Unit = Utils.showPrompt()
   def getUserInput(): String = Utils.getUserInput()
@@ -328,6 +328,8 @@ object Utils {
       return fatherOcleaf // CASO ALGUM DER TRUE ELE ACABA E O PAI É FOLHA
     }
 
+
+
     val childPopulate:List[Octree[Placement]] = generateChild(listNextBoxes,wiredListObjects,worldRoot) //FUNCAO PARA GERAR ARVORES A PARTIR DAS SECCOES DOS FILHOS
 
     //RETORNO FINAL É A OCNODE(PLACEMENTE WIREBOX, GERAR_FILHO(SECCAO FILHO 1), GERAR FILHO(SECCAO FILHO 2),...., GERAR_FILHO(SECCAO FILHO 8)
@@ -336,6 +338,47 @@ object Utils {
       childPopulate.apply(3),childPopulate.apply(4),childPopulate.apply(5),childPopulate.apply(6),childPopulate.apply(7))
     finalTree
   }
+
+  //-------------------------------------------------------------------//
+
+  def treePlacement(oct: Octree[Placement]): Placement = {
+
+    oct match {
+      case OcEmpty => null
+
+      case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
+        val placement: Placement = (coords._1, coords._2)
+        placement
+
+      case OcLeaf(section:Section) =>
+        val placement: Placement = (section._1._1, section._1._2)
+        placement
+    }
+
+  }
+
+  def scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = {
+    if (fact != 0.5 && fact != 2.0)
+      throw new IllegalArgumentException("factor invalido! :(((((((")
+    else {
+
+      oct match {
+        case OcEmpty => OcEmpty
+
+        case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
+          val placement: Placement = (coords._1, coords._2 * fact)
+          val scaledTree: Octree[Placement] = new OcNode(placement, t1, t2, t3, t4, t5, t6, t7, t8)
+          scaledTree
+
+        case OcLeaf(section:Section) =>
+          val placement: Placement = (section._1._1, section._1._2 * fact)
+          val scaledTree: Octree[Placement] = new OcLeaf(placement,section._2)
+          scaledTree
+      }
+    }
+  }
+
+
 
   def scaleList(fact : Double, list: List[Node]) : List[Node] = {
     list match{
@@ -354,6 +397,9 @@ object Utils {
         head :: scaleList(fact, tail)
     }
   }
+
+
+
 
 //-------------------------------------------------------------------------------------//
 
