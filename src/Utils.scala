@@ -14,54 +14,42 @@ case class Utils() {
   def readFromFile(file: String): List[Node] = Utils.readFromFile(file)
   def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
   def boxGenerator(place: ((Double, Double, Double),Double)): Box = Utils.boxGenerator(place)
-  def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a,c, option)
-
+  def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a,c,option)
+  def applySepiaToList(color: Color): Color = Utils.applySepiaToList(color)
+  def removeGreen(color: Color): Color = Utils.removeGreen(color)
   def getNextBoxes(place: ((Double, Double, Double),Double)): List[Box] = Utils.getNextBoxes(place)
 
 object Utils {
 
-//  //Auxiliary types
-//  type Point = (Double, Double, Double)
-//  type Size = Double
-//  type Placement = (Point, Size) //1st point: origin, 2nd point: size
-//
-//  //Shape3D is an abstract class that extends javafx.scene.Node
-//  //Box and Cylinder are subclasses of Shape3D
-//  type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
-
-  //Materials to be applied to the 3D objects
-//  val redMaterial = new PhongMaterial()
-//  redMaterial.setDiffuseColor(Color.rgb(150, 0, 0))
-//
-//  val greenMaterial = new PhongMaterial()
-//  greenMaterial.setDiffuseColor(Color.rgb(0, 255, 0))
-//
-//  val blueMaterial = new PhongMaterial()
-//  blueMaterial.setDiffuseColor(Color.rgb(0, 0, 150))
-//
-
-  def newColour(red: Int, green: Int, blue:Int): PhongMaterial = {
+  def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
     val new_colour = new PhongMaterial()
-    new_colour.setDiffuseColor(Color.rgb(red,green,blue))
+
+    val newRed = red.min(255)
+    val newGreen = green.min(255)
+    val newBlue = blue.min(255)
+
+    new_colour.setDiffuseColor(Color.rgb(newRed,newGreen,newBlue))
     new_colour
   }
 
 
+  def applySepiaToList(color: Color): Color = {
+      val newRed = ((0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue) * 255).toInt
+      val newGreen = ((0.35 * color.getRed +  0.69 * color.getGreen + 0.17 * color.getBlue) * 255).toInt
+      val newBlue = ((0.27 * color.getRed +  0.53 * color.getGreen  + 0.13 * color.getBlue) * 255).toInt
+
+    val newColor = new Color(newRed,newGreen,newBlue,color.getOpacity)
+    newColor
+    }
+
+  def removeGreen(color: Color): Color = {
+       val newColor = new Color(color.getRed,0.0,color.getBlue,color.getOpacity)
+    newColor
+  }
+
   def myToInt(s:String): Int = {
     if (Try(s.toInt).isSuccess) s.toInt else -1
   }
-
-//  def concat[A](apd:A, xs:List[A]) : List[A] = xs match {
-//    case Nil => Nil
-//    case xs => xs :+ apd
-//  }
-//
-//  def concatList[A](apd:List[A], xs:List[A]) : List[A] =
-//      apd match {
-//        case Nil => xs
-//        case head::tail => head::concatList(tail,xs)
-//  }
-
 
   def readFromFile(file: String): List[Node] = {
     val bufferedSource = Source.fromFile(file)
@@ -96,7 +84,6 @@ object Utils {
             boxArr.last.setScaleY(new_item(6).toDouble)
             boxArr.last.setScaleZ(new_item(7).toDouble)
             boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
         }
       }
       else {
@@ -118,81 +105,8 @@ object Utils {
             boxArr.last.setScaleY(1)
             boxArr.last.setScaleZ(1)
             boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
         }
       }
-
-
-
-//  def readFromFile(file: String, materialList : List[Material]): List[Node] = {
-//    val bufferedSource = Source.fromFile(file)
-//
-//    var boxArr: Array[Shape3D] = Array()
-//    var cyArr: Array[Shape3D] = Array()
-//    // val objects: List[Node] = List()
-//
-//    for (line <- bufferedSource.getLines) {
-//      val new_item = line.split(" ")
-//      val objName = new_item(0)
-//      val colourList = new_item(1).toList
-//
-//      if (new_item.size > 2) {
-//        objName match {
-//          case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-//            cyArr.last.setTranslateX(new_item(2).toInt)
-//            cyArr.last.setTranslateY(new_item(3).toInt)
-//            cyArr.last.setTranslateZ(new_item(4).toInt)
-//            cyArr.last.setScaleX(new_item(5).toDouble)
-//            cyArr.last.setScaleY(new_item(6).toDouble)
-//            cyArr.last.setScaleZ(new_item(7).toDouble)
-//            new_item(1) match {
-//              case "(255,0,0)" => cyArr.last.setMaterial(materialList(0))
-//              case "(0,255,0)" => cyArr.last.setMaterial(materialList(1))
-//              case "(0,0,255)" => cyArr.last.setMaterial(materialList(2))
-//            }
-//          case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-//            boxArr.last.setTranslateX(new_item(2).toInt)
-//            boxArr.last.setTranslateY(new_item(3).toInt)
-//            boxArr.last.setTranslateZ(new_item(4).toInt)
-//            boxArr.last.setScaleX(new_item(5).toDouble)
-//            boxArr.last.setScaleY(new_item(6).toDouble)
-//            boxArr.last.setScaleZ(new_item(7).toDouble)
-//            new_item(1) match {
-//              case "(255,0,0)" => boxArr.last.setMaterial(materialList(0))
-//              case "(0,255,0)" => boxArr.last.setMaterial(materialList(1))
-//              case "(0,0,255)" => boxArr.last.setMaterial(materialList(2))
-//            }
-//        }
-//      }
-//      else {
-//        objName match {
-//          case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-//            cyArr.last.setTranslateX(0)
-//            cyArr.last.setTranslateY(0)
-//            cyArr.last.setTranslateZ(0)
-//            cyArr.last.setScaleX(1)
-//            cyArr.last.setScaleY(1)
-//            cyArr.last.setScaleZ(1)
-//            new_item(1) match {
-//              case "(255,0,0)" => cyArr.last.setMaterial(materialList(0))
-//              case "(0,255,0)" => cyArr.last.setMaterial(materialList(1))
-//              case "(0,0,255)" => cyArr.last.setMaterial(materialList(2))
-//            }
-//          case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-//            boxArr.last.setTranslateX(0)
-//            boxArr.last.setTranslateY(0)
-//            boxArr.last.setTranslateZ(0)
-//            boxArr.last.setScaleX(1)
-//            boxArr.last.setScaleY(1)
-//            boxArr.last.setScaleZ(1)
-//            new_item(1) match {
-//              case "(255,0,0)" => boxArr.last.setMaterial(materialList(0))
-//              case "(0,255,0)" => boxArr.last.setMaterial(materialList(1))
-//              case "(0,0,255)" => boxArr.last.setMaterial(materialList(2))
-//            }
-//        }
-//      }
-
     }
     val objects: List[Node]  = cyArr.toList.concat(boxArr.toList)
     bufferedSource.close
@@ -203,7 +117,7 @@ object Utils {
 
   //AUXILIAR
 
-  //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO
+  //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
   def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] =
     listObject match {
       case Nil => Nil
@@ -216,6 +130,27 @@ object Utils {
         }
       }
     }
+
+  //Função auxiliar para criar a lista com todos os elementos contidos
+  def getList(a: List[Node], c: Box, option: Int): List[Node] = {
+    //println(s"3. tamanho da lista a ${a.size}")
+    a match {
+      case Nil => Nil
+      case head :: tail => {
+        if (option == 1) {
+          if (c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent)) {
+            print("cubo contem? " + c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
+            head :: getList(tail, c, option)
+          }
+          else getList(tail, c, option)
+        } else {
+          if (c.getBoundsInParent.intersects(head.asInstanceOf[Shape3D].getBoundsInParent))
+            head :: getList(tail, c, option)
+          else getList(tail, c, option)
+        }
+      }
+    }
+  }
 
   def boxGenerator(placement: ((Double, Double, Double),Double)):Box = {
     val sizeDaCox = placement._2

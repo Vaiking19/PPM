@@ -203,72 +203,8 @@ class Main extends Application {
     //oct1 - example of an Octree[Placement] that contains only one Node (i.e. cylinder1)
     //In case of difficulties to implement task T2 this octree can be used as input for tasks T3, T4 and T5
 
-
-
-    //Função para criar nova lista para a seccção especifica
-    // vai verificar se todos os objectos existentes estão contidos na área da secção
-//    def updateSectionList(b: Box, allObjects: List[Node], option: Int): Section = {
-//      val size = s._1._2
-//      val caixinha = new Box(size, size, size)
-//      caixinha.setTranslateX(s._1._1._1 + size / 2)
-//      caixinha.setTranslateY(s._1._1._2 + size / 2)
-//      caixinha.setTranslateZ(s._1._1._3 + size / 2)
-//
-//      println(s"4. tamanho da caixinha ${caixinha.getHeight}")
-//      val listaComTodos = helper.getList(allObjects, caixinha, option)
-//      println(s"5. tamanho da lista Objects ${allObjects.size}")
-//      println(s"6. tamanho da listaComTodos ${listaComTodos.size}")
-//
-//      if (listaComTodos.size == 0) s
-//      else new Section(s._1, listaComTodos)
-//    }
-//
-//    def groupOfSections(s: List[Section]): List[Section] =
-//      s match {
-//        case Nil => Nil
-//        case head :: tail => updateSectionList(head, objects, 1) :: groupOfSections(tail)
-//      }
-
-    //CRIA 8 SECCOES A CADA PASSO DE NOVA ARVORE
-
-//    def getSectionList(section: Section): List[Section] = {
-//      val size = section._1._2 / 2.0
-//      val x = section._1._1._1
-//      val y = section._1._1._2
-//      val z = section._1._1._3
-//
-//      val sec1: Section = (((x, y, z), size), List())
-//      val sec2: Section = (((x, y + size, z), size), List())
-//      val sec3: Section = (((x, y, z + size), size), List())
-//      val sec4: Section = (((x + size, y, z), size), List())
-//      val sec5: Section = (((x + size, y + size, size), size), List())
-//      val sec6: Section = (((x + size, y, z + size), size), List())
-//      val sec7: Section = (((x + size, y + size, z), size), List())
-//      val sec8: Section = (((x, y + size, z + size), size), List())
-//
-//      val empty = Nil
-//      val newSec: List[Section] = sec1 :: sec2 :: sec3 :: sec4 :: sec5 :: sec6 :: sec7 :: sec8 :: empty
-//
-//      newSec
-//    }
-
-
-//    //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO
-//    def BoxObjects(box: Box, listObject: List[Node]): List[Node] =
-//      listObject match {
-//        case Nil => Nil
-//        case head :: tail => {
-//          if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-//            head :: BoxObjects(box, tail)
-//          else {
-//            worldRoot.getChildren.remove(head)
-//            BoxObjects(box, tail)
-//          }
-//        }
-//      }
-
-
     //T4
+
 
     //TODO T4
     // scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement]
@@ -297,7 +233,7 @@ class Main extends Application {
           }
           case OcLeaf(sec : Section) => {
             val placement: Placement = (sec._1._1, sec._1._2 * fact)
-            val originalBox = helper.boxGenerator(placement) //caixa  tamanho original
+            val originalBox = helper.boxGenerator(sec._1) //caixa  tamanho original
             val alteredBox = helper.boxGenerator(placement)
 
             if(!worldRoot.getChildren.contains(alteredBox))
@@ -375,7 +311,7 @@ class Main extends Application {
             //nodo filho tem elementos contidos entao vai verificar se os filhos desse filho intersectam alguma coisa
             val listNextBoxes = helper.getNextBoxes((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight)
             //se os filhos do nodo filho intersectarem entao o nodo filho é uma folha
-            if (childNodesIntersect(listNextBoxes, listObjects)) {
+            if (childNodesIntersect(listNextBoxes, boxElements)) {
               OcLeaf(new Section(((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight),boxElements)) :: generateChild(tail,listObjects)
             } else {
               //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
@@ -400,20 +336,53 @@ class Main extends Application {
 
       if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
 
-      val listNextBoxes = helper.getNextBoxes(p) //Lista das 8 proximas caixas com objectos contidos
+//      val listNextBoxes = helper.getNextBoxes(p) //Lista das 8 proximas caixas com objectos contidos
 
-      if(childNodesIntersect(listNextBoxes,wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
+      if(childNodesIntersect(helper.getNextBoxes(p),wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
          val fatherOcleaf:Octree[Placement] = OcLeaf((p,wiredListObjects))
         return fatherOcleaf // CASO ALGUM DER TRUE ELE ACABA E O PAI É FOLHA
       }
 
-      val childPopulate:List[Octree[Placement]] = generateChild(listNextBoxes,wiredListObjects) //FUNCAO PARA GERAR ARVORES A PARTIR DAS SECCOES DOS FILHOS
+      val childPopulate:List[Octree[Placement]] = generateChild(helper.getNextBoxes(p),wiredListObjects) //FUNCAO PARA GERAR ARVORES A PARTIR DAS SECCOES DOS FILHOS
 
         //RETORNO FINAL É A OCNODE(PLACEMENTE WIREBOX, GERAR_FILHO(SECCAO FILHO 1), GERAR FILHO(SECCAO FILHO 2),...., GERAR_FILHO(SECCAO FILHO 8)
 
       val finalTree:Octree[Placement] = OcNode(p,childPopulate.apply(0),childPopulate.apply(1),childPopulate.apply(2),
         childPopulate.apply(3),childPopulate.apply(4),childPopulate.apply(5),childPopulate.apply(6),childPopulate.apply(7))
       finalTree
+    }
+
+
+    def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = {
+      oct match {
+        case OcEmpty => OcEmpty
+        case OcNode(coords, _, _, _, _, _, _, _, _) => {
+          val box: Box = helper.boxGenerator(coords)
+          val wiredListObjects:List[Node] = helper.boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+          val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
+          newList.map(x => {
+            val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
+            val newColor = func(color)
+            x.setMaterial(helper.newColour(newColor.getRed.toInt,newColor.getGreen.toInt,newColor.getBlue.toInt))
+          })
+          val newTree:Octree[Placement] = makeTree(coords,box,newList)
+          newTree
+         }
+        case OcLeaf(sec : Section) => {
+          val placement: Placement = (sec._1._1, sec._1._2)
+          val box: Box = helper.boxGenerator(placement)
+          val wiredListObjects:List[Node] = helper.boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+          val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
+          newList.map(x => {
+            val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
+            val newColor = func(color)
+            x.setMaterial(helper.newColour(newColor.getRed.toInt,newColor.getGreen.toInt,newColor.getBlue.toInt))
+          })
+          val newTree:Octree[Placement] = makeTree(placement,box,newList)
+          newTree
+        }
+      }
+
     }
 
 //    val rootTreeEmpty: Octree[Placement] = OcNode[Placement](placement1, OcLeaf(secT1), OcLeaf(secT2), OcLeaf(secT3), OcLeaf(secT4), OcLeaf(secT5), OcLeaf(secT6), OcLeaf(secT7), OcLeaf(secT8))
@@ -423,7 +392,7 @@ class Main extends Application {
     val placement1: Placement = ((0, 0, 0), 32.0)
     val tree = makeTree(placement1, wiredBox, objects)
     println(s" areveres somos:  $tree ")
-    //println(s"33. OcTree ${scaleOctree(2.0, tree)}")
+    println(s"33. OcTree ${scaleOctree(2.0, tree)}")
 
     //example of bounding boxes (corresponding to the octree oct1) added manually to the world
 val b2 = new Box(8, 8, 8)
@@ -446,8 +415,11 @@ b3.setDrawMode(DrawMode.LINE)
 //      worldRoot.getChildren.add(b2)
 //      worldRoot.getChildren.add(b3)
 
+//val newObjects = helper.applySepiaToList(objects)
+//    print(s" 65. lista com sepia $newObjects")
 
 }
+
 override def init(): Unit = {
   println("init")
 }
