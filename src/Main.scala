@@ -19,28 +19,26 @@ import scala.annotation.tailrec
 
 class Main extends Application {
 
-  //Auxiliary types
-  type Point = (Double, Double, Double)
-  type Size = Double
-  type Placement = (Point, Size) //1st point: origin, 2nd point: size
-
-  //Shape3D is an abstract class that extends javafx.scene.Node
-  //Box and Cylinder are subclasses of Shape3D
-  type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
+//  //Auxiliary types
+//  type Point = (Double, Double, Double)
+//  type Size = Double
+//  type Placement = (Point, Size) //1st point: origin, 2nd point: size
+//
+//  //Shape3D is an abstract class that extends javafx.scene.Node
+//  //Box and Cylinder are subclasses of Shape3D
+//  type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
 
   /*
     Additional information about JavaFX basic concepts (e.g. Stage, Scene) will be provided in week7
    */
   override def start(stage: Stage): Unit = {
 
-    //Get and print program arguments (args: Array[String])
-//    val params = getParameters
-//    println("Program arguments:" + params.getRaw)
+//    Get and print program arguments (args: Array[String])
+    val params = getParameters
+    println("Program arguments:" + params.getRaw)
 
-    val helper = new Utils()
-    helper.showPrompt()
-    val userInput = helper.getUserInput()
-
+    showPrompt()
+    val userInput = getUserInput()
 
     //Materials to be applied to the 3D objects
     val redMaterial = new PhongMaterial()
@@ -91,13 +89,13 @@ class Main extends Application {
     box1.setTranslateZ(5)
     box1.setMaterial(greenMaterial)
 
+//    val helper = new Utils
 
 //    val objects: List[Node] = Utils.readFromFile("src/conf.txt", List(redMaterial, greenMaterial, blueMaterial)) //relative path
-    val objects: List[Node] = helper.readFromFile(s"src/$userInput.txt") //relative path
+    val objects: List[Node] = readFromFile(s"src/$userInput.txt") //relative path
 
     // 3D objects (group of nodes - javafx.scene.Node) that will be provide to the subScene
     val worldRoot: Group = new Group(wiredBox, camVolume, lineX, lineY, lineZ)
-
 
     println(s"worldroot size before  ${worldRoot.getChildren.size()}")
 
@@ -151,7 +149,7 @@ class Main extends Application {
 
     // Position of the CameraView: Right-bottom corner
     StackPane.setAlignment(cameraView, Pos.TOP_LEFT)
-    StackPane.setMargin(cameraView, new Insets(5))
+    StackPane.setMargin(cameraView, new Insets(3))
 
     // Scene - defines what is rendered (in this case the subScene and the cameraView)
     val root = new StackPane(subScene, cameraView)
@@ -206,14 +204,9 @@ class Main extends Application {
     stage.setScene(scene)
     stage.show
 
-    stage.close()
-    stage.setScene(scene2)
-    stage.show
-    /*
-    T2 criar uma octree de acordo com os modelos gráficos previamente carregados e permitir
-    a sua visualização (as partições espaciais são representadas com wired cubes). A octree
-    oct1 presente no código fornecido poderá ajudar na interpretação;
-    */
+//    stage.close()
+//    stage.setScene(scene2)
+//    stage.show
 
     //oct1 - example of an Octree[Placement] that contains only one Node (i.e. cylinder1)
     //In case of difficulties to implement task T2 this octree can be used as input for tasks T3, T4 and T5
@@ -236,25 +229,25 @@ class Main extends Application {
           case OcEmpty => OcEmpty
           case OcNode(coords, up_00, up_01, up_10, up_11, down_00, down_01, down_10, down_11) => {
             val placement: Placement = (coords._1, coords._2 * fact)
-            val originalBox = helper.boxGenerator(coords) //caixa  tamanho original
-            val alteredBox = helper.boxGenerator(placement) // caixa ampliada ou reduzida
+            val originalBox = boxGenerator(coords) //caixa  tamanho original
+            val alteredBox = boxGenerator(placement) // caixa ampliada ou reduzida
 
             if(!worldRoot.getChildren.contains(alteredBox))
               worldRoot.getChildren.add(alteredBox)
 
-            val scaledList = scaleList(fact, helper.getList(objects, originalBox, 1))
+            val scaledList = scaleList(fact, getList(objects, originalBox, 1))
 
             makeTree(placement, originalBox, scaledList)
           }
           case OcLeaf(sec : Section) => {
             val placement: Placement = (sec._1._1, sec._1._2 * fact)
-            val originalBox = helper.boxGenerator(sec._1) //caixa  tamanho original
-            val alteredBox = helper.boxGenerator(placement)
+            val originalBox = boxGenerator(sec._1) //caixa  tamanho original
+            val alteredBox = boxGenerator(placement)
 
             if(!worldRoot.getChildren.contains(alteredBox))
               worldRoot.getChildren.add(alteredBox)
 
-            val scaledList = scaleList(fact, helper.getList(objects, originalBox, 1))
+            val scaledList = scaleList(fact, getList(objects, originalBox, 1))
 
             makeTree(placement, alteredBox, scaledList)
           }
@@ -339,117 +332,37 @@ class Main extends Application {
       }
       }
 
-    //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
-    def boxObjects(box: Box, listObject: List[Node]): List[Node] =
-      listObject match {
-        case Nil => Nil
-        case head :: tail => {
-          if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-            head :: boxObjects(box, tail)
-          else {
-            worldRoot.getChildren.remove(head)
-            boxObjects(box, tail)
-          }
-        }
-      }
-
-    //Funcao para criar a OcTree como deve ser
-    def makeTree(p: Placement, box : Box, list: List[Node]): Octree[Placement] = {
-
-      println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
-
-      //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
-
-      val wiredListObjects:List[Node] = boxObjects(box,list)    //LISTA OBJECTOS DA WIREBOX
-
-      if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
-
-//      val listNextBoxes = helper.getNextBoxes(p) //Lista das 8 proximas caixas com objectos contidos
-
-      if(helper.childNodesIntersect(helper.getNextBoxes(p),wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
-         val fatherOcleaf:Octree[Placement] = OcLeaf((p,wiredListObjects))
-        return fatherOcleaf // CASO ALGUM DER TRUE ELE ACABA E O PAI É FOLHA
-      }
-
-      val childPopulate:List[Octree[Placement]] = generateChild(helper.getNextBoxes(p),wiredListObjects) //FUNCAO PARA GERAR ARVORES A PARTIR DAS SECCOES DOS FILHOS
-
-        //RETORNO FINAL É A OCNODE(PLACEMENTE WIREBOX, GERAR_FILHO(SECCAO FILHO 1), GERAR FILHO(SECCAO FILHO 2),...., GERAR_FILHO(SECCAO FILHO 8)
-
-      val finalTree:Octree[Placement] = OcNode(p,childPopulate.apply(0),childPopulate.apply(1),childPopulate.apply(2),
-        childPopulate.apply(3),childPopulate.apply(4),childPopulate.apply(5),childPopulate.apply(6),childPopulate.apply(7))
-      finalTree
-    }
-
-
-    def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = {
-      oct match {
-        case OcEmpty => OcEmpty
-        case OcNode(coords, _, _, _, _, _, _, _, _) => {
-          val box: Box = helper.boxGenerator(coords)
-          val wiredListObjects:List[Node] = boxObjects(box,objects)    //LISTA OBJECTOS DA WIREBOX
-          val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
-          newList.map(x => {
-            val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
-            val newColor = func(color)
-            val newFong = new PhongMaterial()
-            newFong.setDiffuseColor(newColor)
-            x.setMaterial(newFong)
-          })
-          val newTree:Octree[Placement] = makeTree(coords,box,newList)
-          newTree
-         }
-        case OcLeaf(sec : Section) => {
-          val placement: Placement = (sec._1._1, sec._1._2)
-          val box: Box = helper.boxGenerator(placement)
-          val wiredListObjects:List[Node] = boxObjects(box,objects)    //LISTA OBJECTOS DA WIREBOX
-          val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
-          newList.map(x => {
-            val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
-            val newColor = func(color)
-            val newFong = new PhongMaterial()
-            newFong.setDiffuseColor(newColor)
-            x.setMaterial(newFong)
-          })
-          val newTree:Octree[Placement] = makeTree(placement,box,newList)
-          newTree
-        }
-      }
-
-    }
-
-//    val rootTreeEmpty: Octree[Placement] = OcNode[Placement](placement1, OcLeaf(secT1), OcLeaf(secT2), OcLeaf(secT3), OcLeaf(secT4), OcLeaf(secT5), OcLeaf(secT6), OcLeaf(secT7), OcLeaf(secT8))
-
     //    //SECCOES COM COORDENADAS FIXAS QUE CONSTITUEM O 32 CUBO
     //    val size_cubo = wiredBox.getHeight / 2
     val placement1: Placement = ((0, 0, 0), 32.0)
 
     def mainChoose(): Unit = {
-      helper.printChoose()
-      val userInput2 = helper.getUserInputInt()
+      printChoose()
+      val userInput2 = getUserInputInt()
 
       userInput2 match {
 
         case 1 =>
         println(s" Please choose a factorial between 0.5 or 2")
-          val userInputFact = helper.getUserInputDouble
-          val tree = makeTree(placement1, wiredBox, objects)
+          val userInputFact = getUserInputDouble
+          val tree = makeTree(placement1, wiredBox, objects,worldRoot)
           val scaledTree:Octree[Placement] = scaleOctree(userInputFact,tree)
 
         case 2 =>
           println(s" Please choose a format color for your tree:")
           println(s" 1 - applySepiaToList")
           println(s" 2 - removeGreen")
-          val userInputFunc = helper.getUserInputInt()
-          val tree = makeTree(placement1, wiredBox, objects)
+          val userInputFunc = getUserInputInt()
+          val tree = makeTree(placement1, wiredBox, objects,worldRoot)
           userInputFunc match {
-            case 1 =>  val coloredTree:Octree[Placement] = mapColourEffect(helper.applySepiaToList,tree)
-            case 2 =>  val coloredTree:Octree[Placement] = mapColourEffect(helper.removeGreen,tree)
+            case 1 =>  val coloredTree:Octree[Placement] = mapColourEffect(applySepiaToList,tree)
+            case 2 =>  val coloredTree:Octree[Placement] = mapColourEffect(removeGreen,tree)
             case _ => println("amigo, ou 1 ou 2 nada mais....burro...")
           }
 
         case 0 =>
           println(s" .....")
-          val tree = makeTree(placement1, wiredBox, objects)
+          val tree = makeTree(placement1, wiredBox, objects,worldRoot)
 
         case _ => println("Burro é um número que tens de escolher")
 
@@ -468,21 +381,21 @@ class Main extends Application {
 //    println(s"33. OcTree ${scaleOctree(2.0, tree)}")
 
     //example of bounding boxes (corresponding to the octree oct1) added manually to the world
-val b2 = new Box(8, 8, 8)
+//val b2 = new Box(8, 8, 8)
 //translate because it is added by defaut to the coords (0,0,0)
-b2.setTranslateX(32 / 8)
-b2.setTranslateY(8 / 2)
-b2.setTranslateZ(8 / 2)
-b2.setMaterial(blueMaterial)
-b2.setDrawMode(DrawMode.LINE)
-
-val b3 = new Box(4, 4, 4)
+//b2.setTranslateX(32 / 8)
+//b2.setTranslateY(8 / 2)
+//b2.setTranslateZ(8 / 2)
+//b2.setMaterial(blueMaterial)
+//b2.setDrawMode(DrawMode.LINE)
+//
+//val b3 = new Box(4, 4, 4)
 //translate because it is added by defaut to the coords (0,0,0)
-b3.setTranslateX(4 / 2)
-b3.setTranslateY(4 / 2)
-b3.setTranslateZ(4 / 2)
-b3.setMaterial(blueMaterial)
-b3.setDrawMode(DrawMode.LINE)
+//b3.setTranslateX(4 / 2)
+//b3.setTranslateY(4 / 2)
+//b3.setTranslateZ(4 / 2)
+//b3.setMaterial(blueMaterial)
+//b3.setDrawMode(DrawMode.LINE)
 
 //adding boxes b2 and b3 to the world
 //      worldRoot.getChildren.add(b2)

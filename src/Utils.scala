@@ -14,25 +14,38 @@ import scala.collection.SortedMap
 
 case class Utils() {
 
-  def newColour(n1: Int, n2: Int, n3: Int): PhongMaterial = Utils.newColour(n1,n2,n3)
+  def newColour(n1: Int, n2: Int, n3: Int): PhongMaterial = Utils.newColour(n1, n2, n3)
   def readFromFile(file: String): List[Node] = Utils.readFromFile(file)
-//  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
-  def boxGenerator(place: ((Double, Double, Double),Double)): Box = Utils.boxGenerator(place)
-  def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a,c,option)
+  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
+  def boxGenerator(place: Placement): Box = Utils.boxGenerator(place)
+  def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a, c, option)
   def applySepiaToList(color: Color): Color = Utils.applySepiaToList(color)
   def removeGreen(color: Color): Color = Utils.removeGreen(color)
-  def getNextBoxes(place: ((Double, Double, Double),Double)): List[Box] = Utils.getNextBoxes(place)
-
+  def getNextBoxes(place: Placement): List[Box] = Utils.getNextBoxes(place)
+  //def mapColourEffect(func: Color => Color, oct: Octree[Placement]): Octree[Placement] = Utils.mapColourEffect(func,oct)
   def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = Utils.childNodesIntersect(listBoxes, listObjects)
-  def showPrompt(): Unit =  Utils.showPrompt()
+
+
+  def showPrompt(): Unit = Utils.showPrompt()
   def getUserInput(): String = Utils.getUserInput()
   def getUserInputInt(): Int = Utils.getUserInputInt()
   def getUserInputDouble(): Double = Utils.getUserInputDouble()
   def printChoose(): Unit = Utils.printChoose
 
-  object Utils {
+}
+object Utils {
 
-  //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
+    //Auxiliary types
+    type Point = (Double, Double, Double)
+    type Size = Double
+    type Placement = (Point, Size) //1st point: origin, 2nd point: size
+
+    //Shape3D is an abstract class that extends javafx.scene.Node
+    //Box and Cylinder are subclasses of Shape3D
+    type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
+
+
+    //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
   //de configuração, lançar (uma única vez antes de terminar a execução) a
   //visualização do ambiente 3D e aplicar os métodos desenvolvido (p.e.
   //scaleOctree);
@@ -42,10 +55,8 @@ case class Utils() {
   }
 
   def getUserInput(): String = scala.io.StdIn.readLine()
-
-    def getUserInputInt() : Int = scala.io.StdIn.readInt()
-
-    def getUserInputDouble() : Double = scala.io.StdIn.readDouble()
+  def getUserInputInt() : Int = scala.io.StdIn.readInt()
+  def getUserInputDouble() : Double = scala.io.StdIn.readDouble()
 
   def printChoose():Unit = {
     println("Please choose a number: ")
@@ -185,7 +196,7 @@ case class Utils() {
     }
   }
 
-  def boxGenerator(placement: ((Double, Double, Double),Double)):Box = {
+  def boxGenerator(placement: Placement):Box = {
     val sizeDaCox = placement._2
     val cox = new Box(sizeDaCox, sizeDaCox, sizeDaCox)
 
@@ -199,21 +210,25 @@ case class Utils() {
     cox
   }
 
-
-
   //FUNCAO PARA GERAR UM ELEMENTO DO TIPO BOX PARA UMA DETERMINADA SECCAO
-  def getNextBoxes(placement: ((Double, Double, Double),Double)): List[Box] = {
+  def getNextBoxes(placement: Placement): List[Box] = {
 
     val size = placement._2 / 2.0
     val x = placement._1._1
     val y = placement._1._2
     val z = placement._1._3
 
+    //(0,0,0)
     val box1: Box = boxGenerator(((x, y, z), size))
+    //(0,size,0)
     val box2: Box = boxGenerator(((x, y + size, z), size))
+    //(0,0,size)
     val box3: Box = boxGenerator(((x, y, z + size), size))
+    //(size,0,0)
     val box4: Box = boxGenerator(((x + size, y, z), size))
-    val box5: Box = boxGenerator(((x + size, y + size, size), size))
+    //(0,size,size)
+    val box5: Box = boxGenerator(((x, y + size, z + size), size))
+    //(size, 0,size)
     val box6: Box = boxGenerator(((x + size, y, z + size), size))
     val box7: Box = boxGenerator(((x + size, y + size, z), size))
     val box8: Box = boxGenerator(((x, y + size, z + size), size))
@@ -223,28 +238,147 @@ case class Utils() {
     boxList
     }
 
+    //FUNCAO PARA VALIDAR SE ALGUM DOS 8 SECCOES QUE PROSSEGUEM UM DETERMINADO NODO IRAO INTERSECTAR MAS NAO CONTER ALGUM ELEMENTO
+    //OU SEJA, VALIDA SE É POSSIVEL QUE O ELEMENTO CONTIDO PODERÁ VIR A SER PARTIDO EM 8 PARTES OU NAO
+    //CASO SEJA POSSIVEL SER PARTIDO EM 8 PARTES ENTAO RETORNA TRUE PARA QUE O NODO "PAI" SAIBA QUE PODERA PROCEDER EM DIVIDIR-SE
+    //CASO RETORNE FALSE O NODO PAI IRA RECEBER A INFORMAÇÃO DE QUE NAO SE PODERÁ REPARTIR E TERA DE SER ELE A FOLHA
+    @tailrec
+    def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = {
+      @tailrec
+      def runThroughObjects(b: Box, listObjects: List[Node]): Boolean =
+        listObjects match {
+          case Nil => false
+          case head :: tail =>
+            if (b.getBoundsInParent.intersects(head.asInstanceOf[Shape3D].getBoundsInParent) //caso de intersetar e nao conter
+              && !b.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
+              true
+            else
+              runThroughObjects(b, tail)
+        }
+      listBoxes match {
+        case Nil => false
+        case head :: tail =>
+          if (runThroughObjects(head, listObjects))
+            true
+          else childNodesIntersect(tail, listObjects)
+      }
+    }
 
-  //Função auxiliar para criar a lista com todos os elementos contidos
-  def getList(a: List[Node], c: Box, option: Int): List[Node] = {
-    println(s"3. tamanho da lista a ${a.size}")
-    a match {
+
+    //---------------------------------------------------------------------//
+
+    /*
+      T2 criar uma octree de acordo com os modelos gráficos previamente carregados e permitir
+      a sua visualização (as partições espaciais são representadas com wired cubes). A octree
+      oct1 presente no código fornecido poderá ajudar na interpretação;
+      */
+
+  //FUNCAO PARA GERAR TODAS AS OCTREES DAS 8 SECCOES QUE PROSSEGUEM DETERMINADO NODO
+  def generateChild(listBoxes: List[Box], listObjects: List[Node], worldRoot: Group): List[Octree[Placement]] =
+    listBoxes match {
       case Nil => Nil
       case head :: tail => {
-        if (option == 1) {
-          if (c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent)) {
-            print("cubo contem? " + c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-            head :: getList(tail, c, option)
+        val secX = head.getTranslateX - head.getHeight/2
+        val secY = head.getTranslateY - head.getHeight/2
+        val secZ = head.getTranslateZ - head.getHeight/2
+
+        //nodo filho nao tem nenhuma lista contida então é empty
+        val boxElements = getList(listObjects,head,1)
+
+        if (boxElements.isEmpty)
+          OcEmpty :: generateChild(tail,listObjects,worldRoot)
+        else {
+          if(!worldRoot.getChildren.contains(head))
+            worldRoot.getChildren.add(head)
+
+          //nodo filho tem elementos contidos entao vai verificar se os filhos desse filho intersectam alguma coisa
+          val listNextBoxes = getNextBoxes((secX, secY, secZ),head.getHeight)
+
+          //se os filhos do nodo filho intersectarem entao o nodo filho é uma folha
+          if (childNodesIntersect(listNextBoxes, boxElements)) {
+            val sec:Section = new Section(((secX,secY,secZ),head.getHeight),boxElements)
+            OcLeaf(sec) :: generateChild(tail,listObjects,worldRoot)
+          } else {
+            //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
+            OcNode[Placement](new Placement((secX, secY, secZ),head.getWidth),generateChild(listNextBoxes,listObjects,worldRoot).apply(0),generateChild(listNextBoxes,listObjects,worldRoot).apply(1),
+              generateChild(listNextBoxes,listObjects, worldRoot).apply(2),generateChild(listNextBoxes,listObjects,worldRoot).apply(3),generateChild(listNextBoxes,listObjects,worldRoot).apply(4),
+              generateChild(listNextBoxes,listObjects,worldRoot).apply(5),generateChild(listNextBoxes,listObjects,worldRoot).apply(6),generateChild(listNextBoxes,listObjects,worldRoot).apply(7),
+            ):: generateChild(tail,listObjects,worldRoot)
           }
-          else getList(tail, c, option)
-        } else {
-          if (c.getBoundsInParent.intersects(head.asInstanceOf[Shape3D].getBoundsInParent))
-            head :: getList(tail, c, option)
-          else getList(tail, c, option)
         }
       }
     }
+
+
+  //Funcao para criar a OcTree como deve ser
+  def makeTree(p: Placement, box : Box, list: List[Node], worldRoot: Group): Octree[Placement] = {
+
+    //println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
+
+    //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
+
+    val wiredListObjects:List[Node] = boxObjects(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+
+    if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
+
+    val listNextBoxes = getNextBoxes(p) //Lista das 8 proximas caixas com objectos contidos
+
+    if(childNodesIntersect(listNextBoxes,wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
+      val fatherOcleaf:Octree[Placement] = OcLeaf((p,wiredListObjects))
+      return fatherOcleaf // CASO ALGUM DER TRUE ELE ACABA E O PAI É FOLHA
+    }
+
+    val childPopulate:List[Octree[Placement]] = generateChild(listNextBoxes,wiredListObjects,worldRoot) //FUNCAO PARA GERAR ARVORES A PARTIR DAS SECCOES DOS FILHOS
+
+    //RETORNO FINAL É A OCNODE(PLACEMENTE WIREBOX, GERAR_FILHO(SECCAO FILHO 1), GERAR FILHO(SECCAO FILHO 2),...., GERAR_FILHO(SECCAO FILHO 8)
+
+    val finalTree:Octree[Placement] = OcNode(p,childPopulate.apply(0),childPopulate.apply(1),childPopulate.apply(2),
+      childPopulate.apply(3),childPopulate.apply(4),childPopulate.apply(5),childPopulate.apply(6),childPopulate.apply(7))
+    finalTree
   }
 
-}
+  def scaleList(fact : Double, list: List[Node]) : List[Node] = {
+    list match{
+      case Nil => Nil
+      case head :: tail =>
+        if(head.isInstanceOf[Cylinder]) {
+          head.asInstanceOf[Cylinder].setRadius(head.asInstanceOf[Cylinder].getRadius * fact)
+          head.asInstanceOf[Cylinder].setHeight(head.asInstanceOf[Cylinder].getHeight * fact)
+        }else {
+          //Criar novo objeto box com escala modificada?
+          val size = head.asInstanceOf[Box].getWidth
+          head.setScaleX(size * fact)
+          head.setScaleY(size * fact)
+          head.setScaleZ(size * fact)
+        }
+        head :: scaleList(fact, tail)
+    }
+  }
+
+//-------------------------------------------------------------------------------------//
+
+  //T3 permitir que durante a visualização e mediante movimento da câmera (o
+  //movimento é obtido, no código fornecido, clicando no botão esquerdo do
+  //rato), sejam visualmente identificados, através de alteração da cor da
+  //partição, as partições espaciais da octree que sejam visíveis a partir da
+  //câmera (i.e., que intersetam o seu volume de visualização). O código dado
+  //também fornece uma third person view (canto inferior direito) que permite
+  //visualizar a octree de diferentes perspetivas (através do rato),
+  //independentemente da posição da câmera;
+
+  //função para que os elementos mudem de cor quando a camera passar por cima d
+  @tailrec
+  def isInsideObj(partitionsList: List[Node], camVolume: Cylinder): List[Node] = {
+    partitionsList match {
+      case List() => Nil
+      case head :: tail =>
+        if (camVolume.getBoundsInParent.intersects(head.getBoundsInParent) && (head.isInstanceOf[Box] && head.asInstanceOf[Box].getDrawMode == DrawMode.LINE)) {
+          head.asInstanceOf[Shape3D].setMaterial(newColour(0,255,0))
+        } else if (head.isInstanceOf[Box] && head.asInstanceOf[Box].getDrawMode == DrawMode.LINE)
+          head.asInstanceOf[Shape3D].setMaterial(newColour(255,0,0))
+        isInsideObj(tail, camVolume)
+    }
+  }
+
 
 }
