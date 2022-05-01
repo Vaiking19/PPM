@@ -35,5 +35,7 @@
       <CheckBox layoutX="180.0" layoutY="126.0" mnemonicParsing="false" text="Hit me dude" />
       <CheckBox fx:id="button4" layoutX="404.0" layoutY="126.0" mnemonicParsing="false" selected="true" text="There you go" />
       <CheckBox fx:id="button3" indeterminate="true" layoutX="284.0" layoutY="126.0" mnemonicParsing="false" text="Are you sure" />
+      <Label layoutX="286.0" layoutY="46.0" text="Label" />
+      <TextField layoutX="330.0" layoutY="187.0" />
    </children>
 </AnchorPane>

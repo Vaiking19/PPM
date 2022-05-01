@@ -382,7 +382,9 @@ class Main extends Application {
           newList.map(x => {
             val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
             val newColor = func(color)
-            x.setMaterial(helper.newColour(newColor.getRed.toInt,newColor.getGreen.toInt,newColor.getBlue.toInt))
+            val newFong = new PhongMaterial()
+            newFong.setDiffuseColor(newColor)
+            x.setMaterial(newFong)
           })
           val newTree:Octree[Placement] = makeTree(coords,box,newList)
           newTree
@@ -395,7 +397,9 @@ class Main extends Application {
           newList.map(x => {
             val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
             val newColor = func(color)
-            x.setMaterial(helper.newColour(newColor.getRed.toInt,newColor.getGreen.toInt,newColor.getBlue.toInt))
+            val newFong = new PhongMaterial()
+            newFong.setDiffuseColor(newColor)
+            x.setMaterial(newFong)
           })
           val newTree:Octree[Placement] = makeTree(placement,box,newList)
           newTree

@@ -66,7 +66,6 @@ case class Utils() {
     new_colour
   }
 
-
   def applySepiaToList(color: Color): Color = {
       val newRed = (0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue).min(1.0)
       val newGreen = (0.35 * color.getRed +  0.69 * color.getGreen + 0.17 * color.getBlue).min(1.0)
