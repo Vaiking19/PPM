@@ -4,6 +4,7 @@
 import Utils._
 import javafx.application.Application
 import javafx.collections.ObservableList
+import javafx.fxml.FXMLLoader
 import javafx.geometry.{Insets, Pos}
 import javafx.scene._
 import javafx.scene.layout.StackPane
@@ -197,9 +198,17 @@ class Main extends Application {
 
     //setup and start the Stage
     stage.setTitle("PPM Project 21/22")
+    val fxmlLoader = new FXMLLoader(getClass.getResource("Controller.fxml"))
+    val mainViewRoot: Parent = fxmlLoader.load()
+    val scene2 = new Scene(mainViewRoot)
+
+
     stage.setScene(scene)
     stage.show
 
+    stage.close()
+    stage.setScene(scene2)
+    stage.show
     /*
     T2 criar uma octree de acordo com os modelos gráficos previamente carregados e permitir
     a sua visualização (as partições espaciais são representadas com wired cubes). A octree
@@ -448,6 +457,8 @@ class Main extends Application {
 
     }
 
+
+    //USER TEXT INTERFACE
     mainChoose()
 
 
