@@ -1,27 +1,61 @@
+import scala.io.Source
+import scala.util.Try
+import Utils._
+
+import scala.io.StdIn.readLine
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.{Group, Node}
 import javafx.scene.paint.{Color, Material, PhongMaterial}
 import javafx.scene.shape.{Box, Cylinder, DrawMode, Shape3D}
 
-import scala.io.Source
-import scala.util.Try
-import Utils._
+import scala.annotation.tailrec
+import scala.collection.SortedMap
 
 case class Utils() {
 
   def newColour(n1: Int, n2: Int, n3: Int): PhongMaterial = Utils.newColour(n1,n2,n3)
   def readFromFile(file: String): List[Node] = Utils.readFromFile(file)
-  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
+//  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
   def boxGenerator(place: ((Double, Double, Double),Double)): Box = Utils.boxGenerator(place)
   def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a,c,option)
   def applySepiaToList(color: Color): Color = Utils.applySepiaToList(color)
   def removeGreen(color: Color): Color = Utils.removeGreen(color)
   def getNextBoxes(place: ((Double, Double, Double),Double)): List[Box] = Utils.getNextBoxes(place)
 
-object Utils {
+  def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = Utils.childNodesIntersect(listBoxes, listObjects)
+  def showPrompt(): Unit =  Utils.showPrompt()
+  def getUserInput(): String = Utils.getUserInput()
+  def getUserInputInt(): Int = Utils.getUserInputInt()
+  def getUserInputDouble(): Double = Utils.getUserInputDouble()
+  def printChoose(): Unit = Utils.printChoose
 
-  def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
+  object Utils {
+
+  //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
+  //de configuração, lançar (uma única vez antes de terminar a execução) a
+  //visualização do ambiente 3D e aplicar os métodos desenvolvido (p.e.
+  //scaleOctree);
+
+  def showPrompt(): Unit = {
+    println("Please state the name of the configuration file without the extension: ")
+  }
+
+  def getUserInput(): String = scala.io.StdIn.readLine()
+
+    def getUserInputInt() : Int = scala.io.StdIn.readInt()
+
+    def getUserInputDouble() : Double = scala.io.StdIn.readDouble()
+
+  def printChoose():Unit = {
+    println("Please choose a number: ")
+    println("1 - OcScale")
+    println("2 - Colour effect ")
+    println("0 - Normal Octree")
+    println("Number:")
+  }
+
+    def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
     val new_colour = new PhongMaterial()
 
     val newRed = red.min(255)
@@ -34,9 +68,9 @@ object Utils {
 
 
   def applySepiaToList(color: Color): Color = {
-      val newRed = ((0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue) * 255).toInt
-      val newGreen = ((0.35 * color.getRed +  0.69 * color.getGreen + 0.17 * color.getBlue) * 255).toInt
-      val newBlue = ((0.27 * color.getRed +  0.53 * color.getGreen  + 0.13 * color.getBlue) * 255).toInt
+      val newRed = (0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue).min(1.0)
+      val newGreen = (0.35 * color.getRed +  0.69 * color.getGreen + 0.17 * color.getBlue).min(1.0)
+      val newBlue = (0.27 * color.getRed +  0.53 * color.getGreen  + 0.13 * color.getBlue).min(1.0)
 
     val newColor = new Color(newRed,newGreen,newBlue,color.getOpacity)
     newColor
@@ -139,7 +173,7 @@ object Utils {
       case head :: tail => {
         if (option == 1) {
           if (c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent)) {
-            print("cubo contem? " + c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
+//            println("cubo contem? " + c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
             head :: getList(tail, c, option)
           }
           else getList(tail, c, option)

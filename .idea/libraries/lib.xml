@@ -4,7 +4,9 @@
       <root url="file://$PROJECT_DIR$/../../../../../../../../../../../Program Files/Java/javafx-sdk-18/lib" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../../../../../../../../../../Program Files/Java/jdk-17.0.1/lib" />
+    </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/../../../../../../../../../../../Program Files/Java/javafx-sdk-18/lib" recursive="false" />
   </library>
 </component>

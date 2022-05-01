@@ -33,8 +33,13 @@ class Main extends Application {
   override def start(stage: Stage): Unit = {
 
     //Get and print program arguments (args: Array[String])
-    val params = getParameters
-    println("Program arguments:" + params.getRaw)
+//    val params = getParameters
+//    println("Program arguments:" + params.getRaw)
+
+    val helper = new Utils()
+    helper.showPrompt()
+    val userInput = helper.getUserInput()
+
 
     //Materials to be applied to the 3D objects
     val redMaterial = new PhongMaterial()
@@ -85,10 +90,9 @@ class Main extends Application {
     box1.setTranslateZ(5)
     box1.setMaterial(greenMaterial)
 
-  val helper = new Utils()
 
 //    val objects: List[Node] = Utils.readFromFile("src/conf.txt", List(redMaterial, greenMaterial, blueMaterial)) //relative path
-    val objects: List[Node] = helper.readFromFile("src/conf.txt") //relative path
+    val objects: List[Node] = helper.readFromFile(s"src/$userInput.txt") //relative path
 
     // 3D objects (group of nodes - javafx.scene.Node) that will be provide to the subScene
     val worldRoot: Group = new Group(wiredBox, camVolume, lineX, lineY, lineZ)
@@ -179,6 +183,8 @@ class Main extends Application {
       }
     }
 
+
+    //MOUSE LOOP
     //Mouse left click interaction
     scene.setOnMouseClicked((event) => {
       camVolume.setTranslateX(camVolume.getTranslateX + 2)
@@ -311,7 +317,7 @@ class Main extends Application {
             //nodo filho tem elementos contidos entao vai verificar se os filhos desse filho intersectam alguma coisa
             val listNextBoxes = helper.getNextBoxes((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight)
             //se os filhos do nodo filho intersectarem entao o nodo filho é uma folha
-            if (childNodesIntersect(listNextBoxes, boxElements)) {
+            if (helper.childNodesIntersect(listNextBoxes, boxElements)) {
               OcLeaf(new Section(((head.getTranslateX,head.getTranslateY,head.getTranslateZ),head.getHeight),boxElements)) :: generateChild(tail,listObjects)
             } else {
               //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
@@ -324,6 +330,19 @@ class Main extends Application {
       }
       }
 
+    //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
+    def boxObjects(box: Box, listObject: List[Node]): List[Node] =
+      listObject match {
+        case Nil => Nil
+        case head :: tail => {
+          if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
+            head :: boxObjects(box, tail)
+          else {
+            worldRoot.getChildren.remove(head)
+            boxObjects(box, tail)
+          }
+        }
+      }
 
     //Funcao para criar a OcTree como deve ser
     def makeTree(p: Placement, box : Box, list: List[Node]): Octree[Placement] = {
@@ -332,13 +351,13 @@ class Main extends Application {
 
       //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
-      val wiredListObjects:List[Node] = helper.boxObjects(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+      val wiredListObjects:List[Node] = boxObjects(box,list)    //LISTA OBJECTOS DA WIREBOX
 
       if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
 
 //      val listNextBoxes = helper.getNextBoxes(p) //Lista das 8 proximas caixas com objectos contidos
 
-      if(childNodesIntersect(helper.getNextBoxes(p),wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
+      if(helper.childNodesIntersect(helper.getNextBoxes(p),wiredListObjects)){ //FUNCAO QUE RECEBE SECCOES E VAI VER LISTA DE OBJECTOS DA ROOT E VÊ SE ALGUM OBJECTO É INTERSECTADo MAS NAO CONTIDO
          val fatherOcleaf:Octree[Placement] = OcLeaf((p,wiredListObjects))
         return fatherOcleaf // CASO ALGUM DER TRUE ELE ACABA E O PAI É FOLHA
       }
@@ -358,7 +377,7 @@ class Main extends Application {
         case OcEmpty => OcEmpty
         case OcNode(coords, _, _, _, _, _, _, _, _) => {
           val box: Box = helper.boxGenerator(coords)
-          val wiredListObjects:List[Node] = helper.boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+          val wiredListObjects:List[Node] = boxObjects(box,objects)    //LISTA OBJECTOS DA WIREBOX
           val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
           newList.map(x => {
             val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
@@ -371,7 +390,7 @@ class Main extends Application {
         case OcLeaf(sec : Section) => {
           val placement: Placement = (sec._1._1, sec._1._2)
           val box: Box = helper.boxGenerator(placement)
-          val wiredListObjects:List[Node] = helper.boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+          val wiredListObjects:List[Node] = boxObjects(box,objects)    //LISTA OBJECTOS DA WIREBOX
           val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
           newList.map(x => {
             val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
@@ -390,9 +409,48 @@ class Main extends Application {
     //    //SECCOES COM COORDENADAS FIXAS QUE CONSTITUEM O 32 CUBO
     //    val size_cubo = wiredBox.getHeight / 2
     val placement1: Placement = ((0, 0, 0), 32.0)
-    val tree = makeTree(placement1, wiredBox, objects)
-    println(s" areveres somos:  $tree ")
-    println(s"33. OcTree ${scaleOctree(2.0, tree)}")
+
+    def mainChoose(): Unit = {
+      helper.printChoose()
+      val userInput2 = helper.getUserInputInt()
+
+      userInput2 match {
+
+        case 1 =>
+        println(s" Please choose a factorial between 0.5 or 2")
+          val userInputFact = helper.getUserInputDouble
+          val tree = makeTree(placement1, wiredBox, objects)
+          val scaledTree:Octree[Placement] = scaleOctree(userInputFact,tree)
+
+        case 2 =>
+          println(s" Please choose a format color for your tree:")
+          println(s" 1 - applySepiaToList")
+          println(s" 2 - removeGreen")
+          val userInputFunc = helper.getUserInputInt()
+          val tree = makeTree(placement1, wiredBox, objects)
+          userInputFunc match {
+            case 1 =>  val coloredTree:Octree[Placement] = mapColourEffect(helper.applySepiaToList,tree)
+            case 2 =>  val coloredTree:Octree[Placement] = mapColourEffect(helper.removeGreen,tree)
+            case _ => println("amigo, ou 1 ou 2 nada mais....burro...")
+          }
+
+        case 0 =>
+          println(s" .....")
+          val tree = makeTree(placement1, wiredBox, objects)
+
+        case _ => println("Burro é um número que tens de escolher")
+
+      }
+
+    }
+
+    mainChoose()
+
+
+//
+//
+//    println(s" areveres somos:  $tree ")
+//    println(s"33. OcTree ${scaleOctree(2.0, tree)}")
 
     //example of bounding boxes (corresponding to the octree oct1) added manually to the world
 val b2 = new Box(8, 8, 8)
@@ -425,7 +483,7 @@ override def init(): Unit = {
 }
 
 override def stop(): Unit = {
-  println("stopped")
+  println("\n=== You have closed the application ===")
 }
 
 }
