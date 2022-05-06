@@ -1,5 +1,6 @@
 import FxApp._
 import InitSubScene._
+import InitSubScene_text._
 import Utils._
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
@@ -8,6 +9,8 @@ import javafx.scene._
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.stage.Stage
+
+import scala.annotation.tailrec
 
 class Main extends Application {
 
@@ -38,30 +41,43 @@ class Main extends Application {
     val mainViewRoot: Parent = fxmlLoader.load()
     stage.setScene(scene)
 
+    //escolher ficheiro
+    showPrompt()
+    val userInput = getUserInput()
+
+    val placement1 = new Placement((0, 0, 0), 32.0)
+    val tree = makeTree(placement1, getWiredbox(32,255,0,0), images.objects,images.worldRoot)
+    val images:ImageCollection = new ImageCollection(new Group(getWiredbox(32,255,0,0),
+      camVolume,lineX,lineY,lineZ),readFromFile(s"src/$userInput.txt")) //relative path
 
 
+    //MOUSE LOOP
+    //Mouse left click interaction
+    scene.setOnMouseClicked((event) => {
+      camVolume.setTranslateX(camVolume.getTranslateX + 2)
+      images.worldRoot.getChildren.removeAll()
+      //comando para activar a mudança de cor com a câmara
+
+      isInsideObj(images.worldRoot.getChildren.toArray().toList.asInstanceOf[List[Node]], camVolume)
+    })
+
+    mainLoop(tree,new ImageCollection(images.getUpdatedWorld,images.objects),placement1)
+
+    @tailrec
     //USER TEXT INTERFACE
-    def looping(oct:Octree[Placement], img:Imagens) {
-      //escolher ficheiro
-      showPrompt()
-      val userInput = getUserInput()
-      val images:Imagens = new Imagens(new Group(getWiredbox(32,255,0,0),
-        camVolume,lineX,lineY,lineZ),readFromFile(s"src/$userInput.txt")) //relative path
+    def mainLoop(oct:Octree[Placement], img:ImageCollection, place: Placement) {
 
-
-        //escolher opcao de configuração
+      //escolher opcao de configuração
       printChoose()
       val userInput2 = getUserInputInt()
-
-      val placement1:Placement = new Placement((0, 0, 0), 32.0)
 
       userInput2 match {
 
         case 1 =>
         println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
-          val tree = makeTree(placement1, getWiredbox(32,255,0,0), images.objects,images.worldRoot)
-            images.callScaleOctree(userInputFact,tree)
+          val tree = makeTree(place, getWiredbox(32,255,0,0), images.objects,images.worldRoot)
+          images.callScaleOctree(userInputFact,tree,img.worldRoot,img.objects),)
 
         case 2 =>
           println(s" Please choose a format color for your tree:")
@@ -77,7 +93,8 @@ class Main extends Application {
 
         case 0 =>
           println(s" .....")
-          val tree = makeTree(placement1, getWiredbox(32,255,0,0), images.objects,images.worldRoot)
+
+          mainLoop(tree,)
 
         case _ => println("Burro é um número que tens de escolher")
 
@@ -101,7 +118,7 @@ override def stop(): Unit = {
 
 object FxApp {
 
-  val images:Imagens = new Imagens(new Group(getWiredbox(32,255,0,0),
+  val images:ImageCollection = new ImageCollection(new Group(getWiredbox(32,255,0,0),
     camVolume,lineX,lineY,lineZ),List()) //relative path
 
    var tree: Octree[Placement] = OcNode(new Placement((0, 0, 0), 32.0),OcEmpty,OcEmpty,OcEmpty,OcEmpty,OcEmpty,OcEmpty,OcEmpty,OcEmpty)

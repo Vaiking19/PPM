@@ -1,35 +1,32 @@
-import FxApp.images
 import Utils._
-import javafx.geometry.{Insets, Pos}
 import javafx.scene._
-import javafx.scene.layout.StackPane
 import javafx.scene.paint._
 import javafx.scene.shape._
 
-case class Imagens(worldRoot: Group, objects :List[Node]) {
+case class ImageCollection(worldRoot: Group, objects :List[Node]) {
 
-  def getUpdatedWorld(): Group = Imagens.getUpdatedWorld(this)
-  def getUpdatedWorld(n: Node): Group = Imagens.getUpdatedWorld2(this,n)
-  def UpdateObjects(lst: List[Node]): List[Node] = Imagens.updateObjects(this.objects,lst)
-  def callScaleOctree(fact: Double, oct:Octree[Placement]):Octree[Placement] = Imagens.callScaleOctree(this,fact,oct)
-  def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = Imagens.mapColourEffect(this,func,oct)
+  def getUpdatedWorld(): Group = ImageCollection.getUpdatedWorld(this)
+  def getUpdatedWorld(n: Node): Group = ImageCollection.getUpdatedWorld2(this,n)
+  def updateObjects(lst: List[Node]): List[Node] = ImageCollection.updateObjects(this.objects,lst)
+  def callScaleOctree(fact: Double, oct:Octree[Placement], world: Group, objects: List[Node]):Octree[Placement] = ImageCollection.callScaleOctree(this,fact,oct,world, objects)
+  def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = ImageCollection.mapColourEffect(this,func,oct)
 
 }
 
-object Imagens {
+object ImageCollection {
 
 
   def updateObjects(objectsLst: List[Node], lst: List[Node]): List[Node] = {
     objectsLst.concat(lst)
   }
 
-  def getUpdatedWorld(img: Imagens): Group ={
+  def getUpdatedWorld(img: ImageCollection): Group ={
   //Adicionar ao WorlGroup os Node obtidos no ficheiro
   img.objects.map(x => img.worldRoot.getChildren.add(x))
     img.worldRoot
   }
 
-  def getUpdatedWorld2(img: Imagens,n: Node): Group = {
+  def getUpdatedWorld2(img: ImageCollection, n: Node): Group = {
     img.worldRoot.getChildren.add(n)
     img.worldRoot
   }
@@ -63,7 +60,7 @@ object Imagens {
     }*/
 
 
-  def callScaleOctree(img: Imagens,fact:Double, oct:Octree[Placement]):Octree[Placement] = {
+  def callScaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement], worldRoot: Group, objects: List[Node]):Octree[Placement] = {
     val placement:Placement = treePlacement(oct)
     val newTree:Octree[Placement] = scaleOctree(fact,oct)
 
@@ -77,8 +74,8 @@ object Imagens {
           img.worldRoot.getChildren.add(alteredBox)
 
         val originalBox = boxGenerator(placement) //caixa  tamanho original
-        val scaledList = scaleList(fact, getList(img.objects, originalBox, 1))
-        makeTree(coords, originalBox, scaledList,img.worldRoot)
+        val scaledList = scaleList(fact, getList(objects, originalBox, 1))
+        makeTree(coords, originalBox, scaledList,worldRoot)
 
       case OcLeaf(sec : Section) =>
         val coords: Placement = (sec._1._1, sec._1._2 * fact)
@@ -88,12 +85,12 @@ object Imagens {
           img.worldRoot.getChildren.add(alteredBox)
 
         val originalBox = boxGenerator(sec._1) //caixa  tamanho original
-        val scaledList = scaleList(fact, getList(img.objects, originalBox, 1))
-        makeTree(placement, alteredBox, scaledList,img.worldRoot)
+        val scaledList = scaleList(fact, getList(objects, originalBox, 1))
+        makeTree(placement, alteredBox, scaledList,worldRoot)
     }
   }
 
-  def mapColourEffect(img: Imagens, func: Color => Color, oct:Octree[Placement]): Octree[Placement] = {
+  def mapColourEffect(img: ImageCollection, func: Color => Color, oct:Octree[Placement]): Octree[Placement] = {
     oct match {
       case OcEmpty => OcEmpty
       case OcNode(coords, _, _, _, _, _, _, _, _) => {

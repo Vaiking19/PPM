@@ -70,7 +70,6 @@ object InitSubScene{
 
   val root = new StackPane(subScene,cameraView)
 
-
   val scene = new Scene(root, 810, 610, true, SceneAntialiasing.BALANCED)
 
   root.setOnMouseClicked((event) => {
