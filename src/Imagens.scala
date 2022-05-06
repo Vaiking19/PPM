@@ -1,5 +1,8 @@
+import FxApp.images
 import Utils._
+import javafx.geometry.{Insets, Pos}
 import javafx.scene._
+import javafx.scene.layout.StackPane
 import javafx.scene.paint._
 import javafx.scene.shape._
 
@@ -7,7 +10,7 @@ case class Imagens(worldRoot: Group, objects :List[Node]) {
 
   def getUpdatedWorld(): Group = Imagens.getUpdatedWorld(this)
   def getUpdatedWorld(n: Node): Group = Imagens.getUpdatedWorld2(this,n)
-  def UpdateObjects(): List[Node] = Imagens.updateObjects(this.objects,lst: List[Node])
+  def UpdateObjects(lst: List[Node]): List[Node] = Imagens.updateObjects(this.objects,lst)
   def callScaleOctree(fact: Double, oct:Octree[Placement]):Octree[Placement] = Imagens.callScaleOctree(this,fact,oct)
   def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = Imagens.mapColourEffect(this,func,oct)
 
@@ -15,9 +18,9 @@ case class Imagens(worldRoot: Group, objects :List[Node]) {
 
 object Imagens {
 
+
   def updateObjects(objectsLst: List[Node], lst: List[Node]): List[Node] = {
     objectsLst.concat(lst)
-    objectsLst
   }
 
   def getUpdatedWorld(img: Imagens): Group ={
@@ -125,6 +128,9 @@ object Imagens {
     }
 
   }
+
+
+///------------------------------------------------------------------------///
 
 
 }
