@@ -458,15 +458,19 @@ object Utils {
     list match{
       case Nil => Nil
       case head :: tail =>
-        if(head.isInstanceOf[Cylinder]) {
-          head.asInstanceOf[Cylinder].setRadius(head.asInstanceOf[Cylinder].getRadius * fact)
-          head.asInstanceOf[Cylinder].setHeight(head.asInstanceOf[Cylinder].getHeight * fact)
-        }else {
-          //Criar novo objeto box com escala modificada?
-          val size = head.asInstanceOf[Box].getWidth
-          head.setScaleX(size * fact)
-          head.setScaleY(size * fact)
-          head.setScaleZ(size * fact)
+        head.setTranslateX(head.getTranslateX * fact)
+        head.setTranslateY(head.getTranslateY * fact)
+        head.setTranslateZ(head.getTranslateZ * fact)
+        head match {
+          case cylinder: Cylinder =>
+            cylinder.setRadius(cylinder.getRadius * fact)
+            cylinder.setHeight(cylinder.getHeight * fact)
+          case _ =>
+            //Criar novo objeto box com escala modificada?
+            val size = head.asInstanceOf[Box].getWidth
+            head.setScaleX(size * fact)
+            head.setScaleY(size * fact)
+            head.setScaleZ(size * fact)
         }
         head :: scaleList(fact, tail)
     }
