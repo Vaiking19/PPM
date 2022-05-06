@@ -5,47 +5,27 @@ import Utils._
 import scala.io.StdIn.readLine
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.{Group, Node}
+import javafx.scene.{Group, Node, PerspectiveCamera, SceneAntialiasing, SubScene}
 import javafx.scene.paint.{Color, Material, PhongMaterial}
-import javafx.scene.shape.{Box, Cylinder, DrawMode, Shape3D}
+import javafx.scene.shape.{Box, Cylinder, DrawMode, Line, Shape3D}
+import javafx.scene.transform.Rotate
 
 import scala.annotation.tailrec
 import scala.collection.SortedMap
 
-case class Utils() {
-
-  def newColour(n1: Int, n2: Int, n3: Int): PhongMaterial = Utils.newColour(n1, n2, n3)
-  def readFromFile(file: String): List[Node] = Utils.readFromFile(file)
-  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] = Utils.boxObjects(box, listObject, worldRoot)
-  def boxGenerator(place: Placement): Box = Utils.boxGenerator(place)
-  def getList(a: List[Node], c: Box, option: Int): List[Node] = Utils.getList(a, c, option)
-  def applySepiaToList(color: Color): Color = Utils.applySepiaToList(color)
-  def removeGreen(color: Color): Color = Utils.removeGreen(color)
-  def getNextBoxes(place: Placement): List[Box] = Utils.getNextBoxes(place)
-  //def mapColourEffect(func: Color => Color, oct: Octree[Placement]): Octree[Placement] = Utils.mapColourEffect(func,oct)
-  def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = Utils.childNodesIntersect(listBoxes, listObjects)
-  def scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = Utils.scaleOctree(fact, oct)
-
-  def showPrompt(): Unit = Utils.showPrompt()
-  def getUserInput(): String = Utils.getUserInput()
-  def getUserInputInt(): Int = Utils.getUserInputInt()
-  def getUserInputDouble(): Double = Utils.getUserInputDouble()
-  def printChoose(): Unit = Utils.printChoose
-
-}
 object Utils {
 
-    //Auxiliary types
-    type Point = (Double, Double, Double)
-    type Size = Double
-    type Placement = (Point, Size) //1st point: origin, 2nd point: size
+  //Auxiliary types
+  type Point = (Double, Double, Double)
+  type Size = Double
+  type Placement = (Point, Size) //1st point: origin, 2nd point: size
 
-    //Shape3D is an abstract class that extends javafx.scene.Node
-    //Box and Cylinder are subclasses of Shape3D
-    type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
+  //Shape3D is an abstract class that extends javafx.scene.Node
+  //Box and Cylinder are subclasses of Shape3D
+  type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
 
 
-    //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
+  //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
   //de configuração, lançar (uma única vez antes de terminar a execução) a
   //visualização do ambiente 3D e aplicar os métodos desenvolvido (p.e.
   //scaleOctree);
@@ -55,10 +35,12 @@ object Utils {
   }
 
   def getUserInput(): String = scala.io.StdIn.readLine()
-  def getUserInputInt() : Int = scala.io.StdIn.readInt()
-  def getUserInputDouble() : Double = scala.io.StdIn.readDouble()
 
-  def printChoose():Unit = {
+  def getUserInputInt(): Int = scala.io.StdIn.readInt()
+
+  def getUserInputDouble(): Double = scala.io.StdIn.readDouble()
+
+  def printChoose(): Unit = {
     println("Please choose a number: ")
     println("1 - OcScale")
     println("2 - Colour effect ")
@@ -66,16 +48,108 @@ object Utils {
     println("Number:")
   }
 
-    def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
+  //------------------------------------------------------------------------//
+
+  def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
     val new_colour = new PhongMaterial()
 
     val newRed = red.min(255)
     val newGreen = green.min(255)
     val newBlue = blue.min(255)
 
-    new_colour.setDiffuseColor(Color.rgb(newRed,newGreen,newBlue))
+    new_colour.setDiffuseColor(Color.rgb(newRed, newGreen, newBlue))
     new_colour
   }
+
+  //3D objects
+  def getCamVolume(color1: Int, color2: Int, color3: Int): Cylinder = {
+    val camVolume = new Cylinder(10, 50, 10)
+    camVolume.setTranslateX(1)
+    camVolume.getTransforms().add(new Rotate(45, 0, 0, 0, Rotate.X_AXIS))
+    camVolume.setMaterial(newColour(color1, color2, color3))
+    camVolume.setDrawMode(DrawMode.LINE)
+    camVolume
+  }
+
+  def getWiredbox(size: Int, color1: Int, color2: Int, color3: Int): Box = {
+    val wiredBox = new Box(size, size, size)
+    wiredBox.setTranslateX(size / 2)
+    wiredBox.setTranslateY(size / 2)
+    wiredBox.setTranslateZ(size / 2)
+    wiredBox.setMaterial(newColour(color1, color2, color3))
+    wiredBox.setDrawMode(DrawMode.LINE)
+    wiredBox
+  }
+
+  def getLineX(value: Int, color: Color): Line = {
+    val lineX = new Line(0, 0, value, 0)
+    lineX.setStroke(color)
+    lineX
+  }
+
+  def getLineY(value: Int, color: Color): Line = {
+    val lineY = new Line(0, 0, 0, value)
+    lineY.setStroke(color)
+    lineY
+  }
+
+  def getLineZ(value: Int, color: Color): Line = {
+    val lineZ = new Line(0, 0, value, 0)
+    lineZ.setStroke(color)
+    lineZ.getTransforms().add(new Rotate(-90, 0, 0, 0, Rotate.Y_AXIS))
+    lineZ
+  }
+
+  def getCamera(x: Int, y: Int, z: Int, nearClip: Double, farClip: Double, translZ: Int, fieldView: Int, ryAngle: Double, rxAngle: Double): PerspectiveCamera = {
+
+    // Camera
+    val camera = new PerspectiveCamera(true)
+
+    val cameraTransform = new CameraTransformer
+    cameraTransform.setTranslate(x, y, z)
+    cameraTransform.getChildren.add(camera)
+    camera.setNearClip(nearClip)
+    camera.setFarClip(farClip)
+
+    camera.setTranslateZ(translZ)
+    camera.setFieldOfView(fieldView)
+    cameraTransform.ry.setAngle(ryAngle)
+    cameraTransform.rx.setAngle(rxAngle)
+    camera
+  }
+
+  def getCameraView(subScene: SubScene, fitWidth: Int, fitHeight: Int, rxAngle: Int, setZ: Int, setY: Int, transZ: Int): CameraView = {
+
+  val cameraView = new CameraView(subScene)
+  cameraView.setFirstPersonNavigationEabled(true)
+  cameraView.setFitWidth(350)
+  cameraView.setFitHeight(225)
+  cameraView.getRx.setAngle(-45)
+  cameraView.getT.setZ(-10)
+  cameraView.getT.setY(-50)
+  cameraView.getCamera.setTranslateZ(-50)
+  cameraView.startViewing
+    cameraView
+}
+
+  def getSubscene(worldRoot: Group, width :Double, height: Double, depthBuffer: Boolean, antiAliasing: SceneAntialiasing, color: Color): SubScene = {
+    val subScene = new SubScene(worldRoot,width,height,depthBuffer,antiAliasing)
+    subScene.setFill(color)
+    subScene
+  }
+
+  // //Materials to be applied to the 3D objects
+  //    val redMaterial = new PhongMaterial()
+  //    redMaterial.setDiffuseColor(Color.rgb(150, 0, 0))
+  //
+  //    val greenMaterial = new PhongMaterial()
+  //    greenMaterial.setDiffuseColor(Color.rgb(0, 255, 0))
+  //
+  //    val blueMaterial = new PhongMaterial()
+  //    blueMaterial.setDiffuseColor(Color.rgb(0, 0, 150))
+
+
+  //--------------------------------------------------------------------------------//
 
   def applySepiaToList(color: Color): Color = {
       val newRed = (0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue).min(1.0)
