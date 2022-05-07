@@ -332,7 +332,7 @@ object Utils {
     oct match {
       case OcEmpty => null
 
-      case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
+      case OcNode(coords,_,_,_,_,_,_,_,_) =>
         val placement: Placement = (coords._1, coords._2)
         placement
 

@@ -1,3 +1,4 @@
+import InitSubScene.{cameraView, root, subScene}
 import Utils.newColour
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.layout.StackPane
@@ -6,9 +7,9 @@ import javafx.scene.shape.{Box, Cylinder, DrawMode, Line}
 import javafx.scene.transform.Rotate
 import javafx.scene._
 
-object InitSubScene_text{
+object InitSubScene_text {
 
-    def getLineX(value: Int, color: Color): Line = {
+  def getLineX(value: Int, color: Color): Line = {
     val lineX = new Line(0, 0, value, 0)
     lineX.setStroke(color)
     lineX
@@ -74,23 +75,34 @@ object InitSubScene_text{
 
     val cameraView = new CameraView(subScene)
     cameraView.setFirstPersonNavigationEabled(true)
-    cameraView.setFitWidth(350)
-    cameraView.setFitHeight(225)
-    cameraView.getRx.setAngle(-45)
-    cameraView.getT.setZ(-10)
-    cameraView.getT.setY(-50)
-    cameraView.getCamera.setTranslateZ(-50)
+    cameraView.setFitWidth(fitWidth)
+    cameraView.setFitHeight(fitHeight)
+    cameraView.getRx.setAngle(rxAngle)
+    cameraView.getT.setZ(setZ)
+    cameraView.getT.setY(setY)
+    cameraView.getCamera.setTranslateZ(transZ)
     cameraView.startViewing
     cameraView
   }
 
 
-  def getSubscene(worldRoot: Group, width :Double, height: Double, depthBuffer: Boolean, antiAliasing: SceneAntialiasing, color: Color): SubScene = {
-    val subScene = new SubScene(worldRoot,width,height,depthBuffer,antiAliasing)
+  def getSubscene(worldRoot: Group, width: Double, height: Double, color: Color): SubScene = {
+    val subScene = new SubScene(worldRoot, width, height, true, SceneAntialiasing.BALANCED)
     subScene.setFill(color)
     subScene.setCamera(getCamera)
     subScene
   }
+
+  def getRoot(subScene: SubScene, cameraView: CameraView): StackPane = {
+    val root = new StackPane(subScene,cameraView)
+    root
+  }
+
+  def getScene(root: StackPane,width: Double, height: Double): Scene = {
+
+  val scene = new Scene(root, width, height, true, SceneAntialiasing.BALANCED)
+  scene
+}
 
 }
 

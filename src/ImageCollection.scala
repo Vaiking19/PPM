@@ -1,4 +1,4 @@
-import Utils._
+import Utils.{Placement, _}
 import javafx.scene._
 import javafx.scene.paint._
 import javafx.scene.shape._
@@ -8,8 +8,8 @@ case class ImageCollection(worldRoot: Group, objects :List[Node]) {
   def getUpdatedWorld(): Group = ImageCollection.getUpdatedWorld(this)
   def getUpdatedWorld(n: Node): Group = ImageCollection.getUpdatedWorld2(this,n)
   def updateObjects(lst: List[Node]): List[Node] = ImageCollection.updateObjects(this.objects,lst)
-  def callScaleOctree(fact: Double, oct:Octree[Placement], world: Group, objects: List[Node]):Octree[Placement] = ImageCollection.callScaleOctree(this,fact,oct,world, objects)
-  def mapColourEffect(func: Color => Color, oct:Octree[Placement]): Octree[Placement] = ImageCollection.mapColourEffect(this,func,oct)
+  def callScaleOctree(fact: Double, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.callScaleOctree(this,fact,oct,world, objects)
+  def mapColourEffect(func: Color => Color, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.mapColourEffect(this,func,oct,world,objects)
 
 }
 
@@ -60,14 +60,16 @@ object ImageCollection {
     }*/
 
 
-  def callScaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement], worldRoot: Group, objects: List[Node]):Octree[Placement] = {
+  def callScaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement], worldRoot: Group, objects: List[Node]): (Octree[Placement],Group,List[Node],Placement) = {
+    //determinar o placement da arvore original
     val placement:Placement = treePlacement(oct)
+    //obter a nova arvore escalada
     val newTree:Octree[Placement] = scaleOctree(fact,oct)
 
     newTree match {
-      case OcEmpty => OcEmpty
+      case OcEmpty => (OcEmpty,worldRoot,objects,placement)
 
-      case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
+      case OcNode(coords,_,_,_,_,_,_,_,_) =>
         val alteredBox = boxGenerator(coords) // caixa ampliada ou reduzida
 
         if(!img.worldRoot.getChildren.contains(alteredBox))
@@ -75,7 +77,9 @@ object ImageCollection {
 
         val originalBox = boxGenerator(placement) //caixa  tamanho original
         val scaledList = scaleList(fact, getList(objects, originalBox, 1))
-        makeTree(coords, originalBox, scaledList,worldRoot)
+
+        //retorna a arvore escalada, a worldRoot actualizada, lista de objectos escalados, placement da arvore escalada)
+        (makeTree(coords, originalBox, scaledList,worldRoot),worldRoot,scaledList,coords)
 
       case OcLeaf(sec : Section) =>
         val coords: Placement = (sec._1._1, sec._1._2 * fact)
@@ -86,16 +90,18 @@ object ImageCollection {
 
         val originalBox = boxGenerator(sec._1) //caixa  tamanho original
         val scaledList = scaleList(fact, getList(objects, originalBox, 1))
-        makeTree(placement, alteredBox, scaledList,worldRoot)
+        (makeTree(placement, alteredBox, scaledList,worldRoot),worldRoot,scaledList,coords)
     }
   }
 
-  def mapColourEffect(img: ImageCollection, func: Color => Color, oct:Octree[Placement]): Octree[Placement] = {
+  def mapColourEffect(img: ImageCollection, func: Color => Color, oct:Octree[Placement], worldRoot: Group, objects: List[Node]): (Octree[Placement],Group,List[Node],Placement)= {
+    val placement:Placement = treePlacement(oct)
+
     oct match {
-      case OcEmpty => OcEmpty
+      case OcEmpty => (OcEmpty,worldRoot,objects,placement)
       case OcNode(coords, _, _, _, _, _, _, _, _) => {
         val box: Box = boxGenerator(coords)
-        val wiredListObjects:List[Node] = boxObjects(box,img.objects,img.worldRoot)    //LISTA OBJECTOS DA WIREBOX
+        val wiredListObjects:List[Node] = boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
         val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
         newList.map(x => {
           val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
@@ -104,13 +110,14 @@ object ImageCollection {
           newFong.setDiffuseColor(newColor)
           x.setMaterial(newFong)
         })
-        val newTree:Octree[Placement] = makeTree(coords,box,newList,img.worldRoot)
-        newTree
+        val newTree:Octree[Placement] = makeTree(coords,box,newList,worldRoot)
+        (newTree,worldRoot,newList,coords)
       }
+
       case OcLeaf(sec : Section) => {
         val placement: Placement = (sec._1._1, sec._1._2)
         val box: Box = boxGenerator(placement)
-        val wiredListObjects:List[Node] = boxObjects(box,img.objects,img.worldRoot)    //LISTA OBJECTOS DA WIREBOX
+        val wiredListObjects:List[Node] = boxObjects(box,objects,worldRoot)    //LISTA OBJECTOS DA WIREBOX
         val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
         newList.map(x => {
           val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
@@ -119,8 +126,8 @@ object ImageCollection {
           newFong.setDiffuseColor(newColor)
           x.setMaterial(newFong)
         })
-        val newTree:Octree[Placement] = makeTree(placement,box,newList,img.worldRoot)
-        newTree
+        val newTree:Octree[Placement] = makeTree(placement,box,newList,worldRoot)
+        (newTree,worldRoot,newList,placement)
       }
     }
 
