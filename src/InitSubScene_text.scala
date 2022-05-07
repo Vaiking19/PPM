@@ -1,5 +1,5 @@
 import InitSubScene.{cameraView, root, subScene}
-import Utils.newColour
+import Utils.{isInsideObj, newColour}
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.{Color, PhongMaterial}
@@ -59,9 +59,7 @@ object InitSubScene_text {
     val cameraTransform = new CameraTransformer
     cameraTransform.setTranslate(x, y, z)
     cameraTransform.getChildren.add(getCamera)
-    print(s" $getCamera()")
     getCamera.setNearClip(nearClip)
-    print(s" $getCamera()")
     getCamera.setFarClip(farClip)
 
     getCamera().setTranslateZ(translZ)
@@ -95,14 +93,38 @@ object InitSubScene_text {
 
   def getRoot(subScene: SubScene, cameraView: CameraView): StackPane = {
     val root = new StackPane(subScene,cameraView)
+    subScene.widthProperty.bind(root.widthProperty)
+    subScene.heightProperty.bind(root.heightProperty)
     root
   }
 
-  def getScene(root: StackPane,width: Double, height: Double): Scene = {
+  def getScene(worldRoot: Group,width: Double, height: Double): Scene = {
 
-  val scene = new Scene(root, width, height, true, SceneAntialiasing.BALANCED)
-  scene
-}
+    //SUBSCENE
+    val subJohnCena = getSubscene(worldRoot,800,600,Color.DARKSLATEGRAY)
+    val view = getCameraView(subJohnCena,350,225,-45,-100,-500,-50)
+    val root = getRoot(subJohnCena,view)
+
+    StackPane.setAlignment(cameraView, Pos.BOTTOM_RIGHT)
+    StackPane.setMargin(cameraView, new Insets(3))
+
+    getCameraTransformer(worldRoot,0,0,0,0.1,10000.0,-500,20,-45.0,-45.0)
+
+    //SCENE
+    val scenario = new Scene(root, width, height)
+    val volume = getCamVolume(0,0,255)
+
+    //MOUSE LOOP
+    //Mouse left click interaction
+    scenario.setOnMouseClicked((event) => {
+      volume.setTranslateX(volume.getTranslateX + 2)
+      worldRoot.getChildren.removeAll()
+      //comando para activar a mudança de cor com a câmara
+      isInsideObj(worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], volume)
+    })
+
+    scenario
+  }
 
 }
 
