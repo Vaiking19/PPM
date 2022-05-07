@@ -44,7 +44,7 @@ object Utils {
     println("Please choose a number: ")
     println("1 - OcScale")
     println("2 - Colour effect ")
-    println("0 - Normal Octree")
+    println("0 - Exit")
     println("Number:")
   }
 

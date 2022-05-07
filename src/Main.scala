@@ -47,24 +47,23 @@ class Main extends Application {
       getLineZ(200,Color.AQUAMARINE)),readFromFile(s"src/$userInput.txt")) //relative path
 
     val tree = makeTree(placement1, getWiredbox(32,255,0,0), images.objects,images.worldRoot)
+    val subJohnCena = getSubscene(images.worldRoot,200,200,Color.DARKSLATEGRAY)
 
-    stage.setScene(getScene(
-      getRoot(getSubscene(images.worldRoot,200,200,Color.DARKSLATEGRAY),
-      getCameraView(getSubscene(images.worldRoot,200,200,Color.DARKSLATEGRAY),
-        350,225,-45,-10,-50,-50)),
-      810,610))
+    val scenario = getScene(
+      getRoot(subJohnCena,getCameraView(subJohnCena,350,225,-45,-10,-50,-50)),
+      810,610)
+
+    stage.setScene(scenario)
+    stage.show
+
 
     //MOUSE LOOP
     //Mouse left click interaction
-    getScene(
-      getRoot(getSubscene(images.worldRoot,200,200,Color.DARKSLATEGRAY),
-        getCameraView(getSubscene(images.worldRoot,200,200,Color.DARKSLATEGRAY),
-          350,225,-45,-10,-50,-50)),
-      810,610).setOnMouseClicked((event) => {
+    scenario.setOnMouseClicked((event) => {
       getCamVolume(0,0,255).setTranslateX(getCamVolume(0,0,255).getTranslateX + 2)
       images.worldRoot.getChildren.removeAll()
-      //comando para activar a mudança de cor com a câmara
 
+      //comando para activar a mudança de cor com a câmara
       isInsideObj(images.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], getCamVolume(0,0,255))
     })
 
@@ -83,9 +82,8 @@ class Main extends Application {
         case 1 =>
         println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
-
           val scaledTree = images.callScaleOctree(userInputFact,oct,img.worldRoot,img.objects)
-          stage.show
+
           mainLoop(scaledTree._1,new ImageCollection(scaledTree._2,scaledTree._3),scaledTree._4)
 
         case 2 =>
@@ -98,21 +96,20 @@ class Main extends Application {
           userInputFunc match {
             case 1 =>
               val coloredTree = images.mapColourEffect(applySepiaToList,oct,img.worldRoot,img.objects)
+
               mainLoop(coloredTree._1,new ImageCollection(coloredTree._2,coloredTree._3),coloredTree._4)
 
             case 2 =>
-              val coloredTree = images.mapColourEffect(removeGreen,tree,img.worldRoot,img.objects)
+              val coloredTree = images.mapColourEffect(removeGreen,oct,img.worldRoot,img.objects)
               mainLoop(coloredTree._1,new ImageCollection(coloredTree._2,coloredTree._3),coloredTree._4)
 
-            case _ => println("amigo, ou 1 ou 2 nada mais....burro...")
+            case 0 =>
+
+              mainLoop(oct,img,place)
+              println("isto é uma octree perfeitamente normal só não dá oxigénio")
           }
-
         case _ => println("Adios, adieux, Auf Wiedersehen, goodbye")
-
       }
-
-
-
   }
 
 }
