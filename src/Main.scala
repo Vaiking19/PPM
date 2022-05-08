@@ -13,7 +13,6 @@ import scala.annotation.tailrec
 class Main extends Application {
 
   override def start(stage: Stage): Unit = {
-
 //    Get and print program arguments (args: Array[String])
     val params = getParameters
     println("Program arguments:" + params.getRaw)
@@ -22,27 +21,29 @@ class Main extends Application {
     stage.setTitle("PPM Project 21/22")
 //    val fxmlLoader = new FXMLLoader(getClass.getResource("Controller.fxml"))
 //    val mainViewRoot: Parent = fxmlLoader.load()
-
     //escolher ficheiro
     showPrompt()
     val userInput = getUserInput()
 
     val placement1 = new Placement((0, 0, 0), 32.0)
+    val camVolume = createCamVolume(0,0,255)
 
     val images:ImageCollection = new ImageCollection(new Group(createWiredbox(32,255,0,0),
-      createCamVolume(0,0,255),createLineX(200,Color.GREEN),createLineY(200,Color.YELLOW),
+      camVolume,createLineX(200,Color.GREEN),createLineY(200,Color.YELLOW),
       createLineZ(200,Color.AQUAMARINE)),readFromFile(s"src/$userInput.txt")) //relative path
 
-    val tree = makeTree(placement1, createWiredbox(32,255,0,0), images.objects,images.worldRoot)
 
-       @tailrec
+    //problema no camVolume, estava a aceder a um diferente que nao estava incluido na worldroot
+
+    //val tree = makeTree(placement1, createWiredbox(32,255,0,0), images.objects,images.worldRoot)
+
+    @tailrec
     def mainLoop(oct:Octree[Placement], img:ImageCollection): ImageCollection = {
       //escolher opcao de configuração
       printChoose()
       val userInput2 = getUserInputInt()
 
       userInput2 match {
-
         case 1 =>
           println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
@@ -79,20 +80,19 @@ class Main extends Application {
           }
     }
 
-    val imgRoot = mainLoop(tree,new ImageCollection(images.getUpdatedWorld,images.objects))
+    val tree = makeTree(placement1, images.objects,images.worldRoot)
+    val imgRoot = mainLoop(tree, new ImageCollection(images.getUpdatedWorld,images.objects))
 
     //USER TEXT INTERFACE
-      val scene = createScene(imgRoot.worldRoot,810,610)
-      StackPane.setAlignment(scene._2, Pos.TOP_LEFT)
-      StackPane.setMargin(scene._2, new Insets(3))
-
-    val volume = createCamVolume(0, 0, 255)
+    val scene = createScene(imgRoot.worldRoot,810,610)
+    StackPane.setAlignment(scene._2, Pos.TOP_LEFT)
+    StackPane.setMargin(scene._2, new Insets(3))
 
     scene._1.setOnMouseClicked((event) => {
-      volume.setTranslateX(volume.getTranslateX + 2)
+      camVolume.setTranslateX(camVolume.getTranslateX + 2)
       imgRoot.worldRoot.getChildren.removeAll()
       //comando para activar a mudança de cor com a câmara
-      isInsideObj(imgRoot.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], volume)
+      isInsideObj(imgRoot.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], camVolume)
     })
 
     stage.setScene(scene._1)

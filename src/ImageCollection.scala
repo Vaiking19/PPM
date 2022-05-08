@@ -69,7 +69,7 @@ def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octre
         val newBox = boxGenerator(placement)
         img.worldRoot.getChildren.add(newBox)
         val scaledList = scaleList(fact, getList(img.objects, oldBox, 1))
-        val newTree = makeTree(placement, oldBox, scaledList, img.worldRoot)
+        val newTree = makeTree(placement, scaledList, img.worldRoot)
 
         (newTree, img.worldRoot, scaledList)
 
@@ -80,7 +80,7 @@ def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octre
         val newBox = boxGenerator(placement)
         img.worldRoot.getChildren.add(newBox)
         val scaledList = scaleList(fact, img.objects)
-        val newTree = makeTree(placement, oldBox, scaledList, img.worldRoot)
+        val newTree = makeTree(placement, scaledList, img.worldRoot)
 
         (newTree, img.worldRoot, scaledList)
       }
@@ -108,7 +108,7 @@ def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octre
           newFong.setDiffuseColor(newColor)
           x.setMaterial(newFong)
         })
-        val newTree:Octree[Placement] = makeTree(coords,box,newList,worldRoot)
+        val newTree:Octree[Placement] = makeTree(coords,newList,worldRoot)
         (newTree,worldRoot,newList,coords)
       }
 
@@ -124,7 +124,7 @@ def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octre
           newFong.setDiffuseColor(newColor)
           x.setMaterial(newFong)
         })
-        val newTree:Octree[Placement] = makeTree(placement,box,newList,worldRoot)
+        val newTree:Octree[Placement] = makeTree(placement,newList,worldRoot)
         (newTree,worldRoot,newList,placement)
       }
     }

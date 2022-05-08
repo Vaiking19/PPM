@@ -297,10 +297,10 @@ object Utils {
 
 
   //Funcao para criar a OcTree como deve ser
-  def makeTree(p: Placement, box : Box, list: List[Node], worldRoot: Group): Octree[Placement] = {
+  def makeTree(p: Placement, list: List[Node], worldRoot: Group): Octree[Placement] = {
 
     //println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
-
+    val box = boxGenerator(p)
     //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
     val wiredListObjects:List[Node] = boxObjects(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
