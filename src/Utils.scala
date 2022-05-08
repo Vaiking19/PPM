@@ -343,29 +343,6 @@ object Utils {
 
   }
 
-  def scaleOctree(fact:Double, oct:Octree[Placement]):Octree[Placement] = {
-    if (fact != 0.5 && fact != 2.0)
-      throw new IllegalArgumentException("factor invalido! :(((((((")
-    else {
-
-      oct match {
-        case OcEmpty => OcEmpty
-
-        case OcNode(coords, t1, t2, t3, t4, t5, t6, t7, t8) =>
-          val placement: Placement = (coords._1, coords._2 * fact)
-          val scaledTree: Octree[Placement] = new OcNode(placement, t1, t2, t3, t4, t5, t6, t7, t8)
-          scaledTree
-
-        case OcLeaf(section:Section) =>
-          val placement: Placement = (section._1._1, section._1._2 * fact)
-          val scaledTree: Octree[Placement] = new OcLeaf(placement,section._2)
-          scaledTree
-      }
-    }
-  }
-
-
-
   def scaleList(fact : Double, list: List[Node]) : List[Node] = {
     list match{
       case Nil => Nil

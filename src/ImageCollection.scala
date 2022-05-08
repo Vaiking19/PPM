@@ -1,4 +1,4 @@
-import Utils.{Placement, _}
+import Utils._
 import javafx.scene._
 import javafx.scene.paint._
 import javafx.scene.shape._
@@ -8,7 +8,7 @@ case class ImageCollection(worldRoot: Group, objects :List[Node]) {
   def getUpdatedWorld(): Group = ImageCollection.getUpdatedWorld(this)
   def getUpdatedWorld(n: Node): Group = ImageCollection.getUpdatedWorld2(this,n)
   def updateObjects(lst: List[Node]): List[Node] = ImageCollection.updateObjects(this.objects,lst)
-  def callScaleOctree(fact: Double, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.callScaleOctree(this,fact,oct,world, objects)
+  def scaleOctree(fact: Double, oct:Octree[Placement]):(Octree[Placement],Group,List[Node]) = ImageCollection.scaleOctree(this,fact,oct)
   def mapColourEffect(func: Color => Color, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.mapColourEffect(this,func,oct,world,objects)
 
 }
@@ -58,40 +58,39 @@ object ImageCollection {
 
     }*/
 
+def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octree[Placement],Group,List[Node]) = {
+  if (fact != 0.5 && fact != 2.0)
+    throw new IllegalArgumentException("factor invalido! :(((((((")
+  else {
+    oct match {
+      case OcNode(coords, _, _, _, _, _, _, _, _) => {
+        val placement: Placement = (coords._1, coords._2 * fact)
+        val oldBox = boxGenerator(coords) //caixa  tamanho original
+        val newBox = boxGenerator(placement)
+        img.worldRoot.getChildren.add(newBox)
+        val scaledList = scaleList(fact, getList(img.objects, oldBox, 1))
+        val newTree = makeTree(placement, oldBox, scaledList, img.worldRoot)
 
-  def callScaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement], worldRoot: Group, objects: List[Node]): (Octree[Placement],Group,List[Node],Placement) = {
-    //determinar o placement da arvore original
-    val placement:Placement = treePlacement(oct)
-    //obter a nova arvore escalada
-    val newTree:Octree[Placement] = scaleOctree(fact,oct)
+        (newTree, img.worldRoot, scaledList)
 
-    newTree match {
-      case OcEmpty => (OcEmpty,worldRoot,objects,placement)
+      }
+      case OcLeaf(sec : Section) => {
+        val placement: Placement = (sec._1._1, sec._1._2 * fact)
+        val oldBox = boxGenerator(sec._1) //caixa  tamanho original
+        val newBox = boxGenerator(placement)
+        img.worldRoot.getChildren.add(newBox)
+        val scaledList = scaleList(fact, img.objects)
+        val newTree = makeTree(placement, oldBox, scaledList, img.worldRoot)
 
-      case OcNode(coords,_,_,_,_,_,_,_,_) =>
-        val alteredBox = boxGenerator(coords) // caixa ampliada ou reduzida
-
-        if(!img.worldRoot.getChildren.contains(alteredBox))
-          img.worldRoot.getChildren.add(alteredBox)
-
-        val originalBox = boxGenerator(placement) //caixa  tamanho original
-        val scaledList = scaleList(fact, getList(objects, originalBox, 1))
-
-        //retorna a arvore escalada, a worldRoot actualizada, lista de objectos escalados, placement da arvore escalada)
-        (makeTree(coords, originalBox, scaledList,worldRoot),worldRoot,scaledList,coords)
-
-      case OcLeaf(sec : Section) =>
-        val coords: Placement = (sec._1._1, sec._1._2 * fact)
-        val alteredBox = boxGenerator(coords)
-
-        if(!img.worldRoot.getChildren.contains(alteredBox))
-          img.worldRoot.getChildren.add(alteredBox)
-
-        val originalBox = boxGenerator(sec._1) //caixa  tamanho original
-        val scaledList = scaleList(fact, getList(objects, originalBox, 1))
-        (makeTree(placement, alteredBox, scaledList,worldRoot),worldRoot,scaledList,coords)
+        (newTree, img.worldRoot, scaledList)
+      }
+      case OcEmpty => (OcEmpty,img.worldRoot,img.objects)
     }
+
   }
+}
+
+
 
   def mapColourEffect(img: ImageCollection, func: Color => Color, oct:Octree[Placement], worldRoot: Group, objects: List[Node]): (Octree[Placement],Group,List[Node],Placement)= {
     val placement:Placement = treePlacement(oct)

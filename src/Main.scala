@@ -33,9 +33,10 @@ class Main extends Application {
       createCamVolume(0,0,255),createLineX(200,Color.GREEN),createLineY(200,Color.YELLOW),
       createLineZ(200,Color.AQUAMARINE)),readFromFile(s"src/$userInput.txt")) //relative path
 
-    @tailrec
-    def mainLoop(oct:Octree[Placement], img:ImageCollection, place: Placement): ImageCollection = {
+    val tree = makeTree(placement1, createWiredbox(32,255,0,0), images.objects,images.worldRoot)
 
+       @tailrec
+    def mainLoop(oct:Octree[Placement], img:ImageCollection): ImageCollection = {
       //escolher opcao de configuração
       printChoose()
       val userInput2 = getUserInputInt()
@@ -45,9 +46,9 @@ class Main extends Application {
         case 1 =>
           println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
-          val scaledTree = images.callScaleOctree(userInputFact, oct, img.worldRoot, img.objects)
+          val scaledTree:(Octree[Placement],Group,List[Node]) = img.scaleOctree(userInputFact,oct)
 
-          mainLoop(scaledTree._1, new ImageCollection(scaledTree._2, scaledTree._3), scaledTree._4)
+          mainLoop(scaledTree._1, new ImageCollection(scaledTree._2, scaledTree._3))
 
         case 2 =>
           println(s" Please choose a format color for your tree:")
@@ -59,11 +60,11 @@ class Main extends Application {
           userInputFunc match {
             case 1 =>
               val coloredTree = images.mapColourEffect(applySepiaToList, oct, img.worldRoot, img.objects)
-              mainLoop(coloredTree._1, new ImageCollection(coloredTree._2, coloredTree._3), coloredTree._4)
+              mainLoop(coloredTree._1, new ImageCollection(coloredTree._2, coloredTree._3))
 
             case 2 =>
               val coloredTree = images.mapColourEffect(removeGreen, oct, img.worldRoot, img.objects)
-               mainLoop(coloredTree._1, new ImageCollection(coloredTree._2, coloredTree._3), coloredTree._4)
+               mainLoop(coloredTree._1, new ImageCollection(coloredTree._2, coloredTree._3))
 
             case _ =>
               print("s adeus aí velho")
@@ -78,10 +79,7 @@ class Main extends Application {
           }
     }
 
-
-    val tree = makeTree(placement1, createWiredbox(32,255,0,0), images.objects,images.worldRoot)
-
-    val imgRoot = mainLoop(tree,new ImageCollection(images.getUpdatedWorld,images.objects),placement1)
+    val imgRoot = mainLoop(tree,new ImageCollection(images.getUpdatedWorld,images.objects))
 
     //USER TEXT INTERFACE
       val scene = createScene(imgRoot.worldRoot,810,610)
@@ -92,7 +90,7 @@ class Main extends Application {
 
     scene._1.setOnMouseClicked((event) => {
       volume.setTranslateX(volume.getTranslateX + 2)
-//      imgRoot.worldRoot.getChildren.removeAll()
+      imgRoot.worldRoot.getChildren.removeAll()
       //comando para activar a mudança de cor com a câmara
       isInsideObj(imgRoot.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], volume)
     })
