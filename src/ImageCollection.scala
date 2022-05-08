@@ -15,7 +15,6 @@ case class ImageCollection(worldRoot: Group, objects :List[Node]) {
 
 object ImageCollection {
 
-
   def updateObjects(objectsLst: List[Node], lst: List[Node]): List[Node] = {
     objectsLst.concat(lst)
   }

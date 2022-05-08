@@ -42,9 +42,10 @@ object Utils {
 
   def printChoose(): Unit = {
     println("Please choose a number: ")
+    println("0 - Octree normal")
     println("1 - OcScale")
     println("2 - Colour effect ")
-    println("0 - Octree normal")
+    println("3 - Show me yours and I will show you mine ")
     println("Number:")
   }
 
@@ -146,17 +147,16 @@ object Utils {
 
 
   //AUXILIAR
-
   //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
-  def boxObjects(box: Box, listObject: List[Node], worldRoot : Group): List[Node] =
+  def boxObjects(box: Box, listObject: List[Node], worldRoot: Group): List[Node] =
     listObject match {
       case Nil => Nil
       case head :: tail => {
         if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-          head :: boxObjects(box, tail, worldRoot)
+          head :: boxObjects(box, tail,worldRoot)
         else {
           worldRoot.getChildren.remove(head)
-          boxObjects(box, tail, worldRoot)
+          boxObjects(box, tail,worldRoot)
         }
       }
     }
@@ -216,12 +216,12 @@ object Utils {
     val box5: Box = boxGenerator(((x, y + size, z + size), size))
     //(size, 0,size)
     val box6: Box = boxGenerator(((x + size, y, z + size), size))
+    //(size,size,0)
     val box7: Box = boxGenerator(((x + size, y + size, z), size))
-    val box8: Box = boxGenerator(((x, y + size, z + size), size))
+    //(size,size,size)
+    val box8: Box = boxGenerator(((x + size, y + size, z + size), size))
 
-    val empty = Nil
-    val boxList: List[Box] = box1 :: box2 :: box3 :: box4 :: box5 :: box6 :: box7 :: box8 :: empty
-    boxList
+    box1 :: box2 :: box3 :: box4 :: box5 :: box6 :: box7 :: box8 :: List()
     }
 
     //FUNCAO PARA VALIDAR SE ALGUM DOS 8 SECCOES QUE PROSSEGUEM UM DETERMINADO NODO IRAO INTERSECTAR MAS NAO CONTER ALGUM ELEMENTO
@@ -415,6 +415,7 @@ object Utils {
         isInsideObj(tail, camVolume)
     }
   }
+
 
 
 }
