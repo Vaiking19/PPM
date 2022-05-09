@@ -347,9 +347,9 @@ object Utils {
     list match{
       case Nil => Nil
       case head :: tail =>
-        head.setTranslateX(head.getTranslateX * fact)
-        head.setTranslateY(head.getTranslateY * fact)
-        head.setTranslateZ(head.getTranslateZ * fact)
+//        head.setTranslateX(head.getTranslateX * fact)
+//        head.setTranslateY(head.getTranslateY * fact)
+//        head.setTranslateZ(head.getTranslateZ * fact)
         head match {
           case cylinder: Cylinder =>
             cylinder.setRadius(cylinder.getRadius * fact)

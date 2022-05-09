@@ -48,7 +48,6 @@ class Main extends Application {
           println(s" Please choose a factorial between 0.5 or 2")
           val userInputFact = getUserInputDouble
           val scaledTree:(Octree[Placement],Group,List[Node]) = img.scaleOctree(userInputFact,oct)
-
           mainLoop(scaledTree._1, new ImageCollection(scaledTree._2, scaledTree._3))
 
         case 2 =>
@@ -72,7 +71,6 @@ class Main extends Application {
               img
 
           }
-
          case _ =>
           print("s adeus aí velho")
           img

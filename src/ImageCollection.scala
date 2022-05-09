@@ -3,6 +3,8 @@ import javafx.scene._
 import javafx.scene.paint._
 import javafx.scene.shape._
 
+import scala.annotation.tailrec
+
 case class ImageCollection(worldRoot: Group, objects :List[Node]) {
 
   def getUpdatedWorld(): Group = ImageCollection.getUpdatedWorld(this)
@@ -59,30 +61,51 @@ object ImageCollection {
     }*/
 
 def scaleOctree(img: ImageCollection, fact:Double, oct:Octree[Placement]):(Octree[Placement],Group,List[Node]) = {
+  @tailrec
+  def removeElWorld(img: Group, objects: List[Node]): Group =
+  //TODO limpar lista de objetos dos scales anteriores
+    objects match {
+      case Nil => img
+    case head::tail => {
+      if(img.getChildren.contains(head)){
+        img.getChildren.remove(head)
+      }
+      removeElWorld(img,tail)
+    }
+  }
+
   if (fact != 0.5 && fact != 2.0)
     throw new IllegalArgumentException("factor invalido! :(((((((")
   else {
     oct match {
       case OcNode(coords, _, _, _, _, _, _, _, _) => {
         val placement: Placement = (coords._1, coords._2 * fact)
+
         val oldBox = boxGenerator(coords) //caixa  tamanho original
         val newBox = boxGenerator(placement)
-        img.worldRoot.getChildren.add(newBox)
-        val scaledList = scaleList(fact, getList(img.objects, oldBox, 1))
-        val newTree = makeTree(placement, scaledList, img.worldRoot)
 
-        (newTree, img.worldRoot, scaledList)
+        val newRoot = removeElWorld(img.worldRoot,img.objects)
+        newRoot.getChildren.add(newBox)
+
+        val scaledList = scaleList(fact, getList(img.objects, oldBox, 1))
+
+        val newTree = makeTree(placement, scaledList, newRoot)
+
+        (newTree, newRoot, scaledList)
 
       }
       case OcLeaf(sec : Section) => {
         val placement: Placement = (sec._1._1, sec._1._2 * fact)
         val oldBox = boxGenerator(sec._1) //caixa  tamanho original
         val newBox = boxGenerator(placement)
-        img.worldRoot.getChildren.add(newBox)
-        val scaledList = scaleList(fact, img.objects)
-        val newTree = makeTree(placement, scaledList, img.worldRoot)
 
-        (newTree, img.worldRoot, scaledList)
+        val newRoot = removeElWorld(img.worldRoot,img.objects)
+        newRoot.getChildren.add(newBox)
+        val scaledList = scaleList(fact, img.objects)
+
+        val newTree = makeTree(placement, scaledList, newRoot)
+
+        (newTree, newRoot, scaledList)
       }
       case OcEmpty => (OcEmpty,img.worldRoot,img.objects)
     }
