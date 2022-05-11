@@ -133,7 +133,7 @@ object Utils {
         if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
           head :: getObjectsInsideBox(box, tail,worldRoot)
         else {
-          worldRoot.getChildren.remove(head)
+//          worldRoot.getChildren.remove(head)
           getObjectsInsideBox(box, tail,worldRoot)
         }
       }
@@ -317,9 +317,10 @@ object Utils {
     list match{
       case Nil => Nil
       case head :: tail =>
-//        head.setTranslateX(head.getTranslateX * fact)
-//        head.setTranslateY(head.getTranslateY * fact)
-//        head.setTranslateZ(head.getTranslateZ * fact)
+
+        head.setTranslateX(head.getTranslateX * fact)
+        head.setTranslateY(head.getTranslateY * fact)
+        head.setTranslateZ(head.getTranslateZ * fact)
         head match {
           case cylinder: Cylinder =>
             cylinder.setRadius(cylinder.getRadius * fact)
@@ -327,9 +328,13 @@ object Utils {
           case _ =>
             //Criar novo objeto box com escala modificada?
             val size = head.asInstanceOf[Box].getWidth
+            println(s"antes de escalado ${size}")
+            val fat = size * fact
+            println(s"antes de escalado ${fat}")
             head.setScaleX(size * fact)
             head.setScaleY(size * fact)
             head.setScaleZ(size * fact)
+           // println(s"depois de escalado ${head.asInstanceOf[Box].}")
         }
         head :: scaleList(fact, tail)
     }

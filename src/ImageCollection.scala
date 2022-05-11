@@ -59,7 +59,10 @@ object ImageCollection {
       throw new IllegalArgumentException("factor invalido! :(((((((")
     else {
 
-      img.worldRoot.getChildren.removeIf(x=> {(!img.objects.contains(x) && x.isInstanceOf[Box])})
+
+      img.worldRoot.getChildren.toArray().foreach(x => if(x.isInstanceOf[Box]) println(s"a remover object: ${x.asInstanceOf[Box].getDrawMode} and ${x.asInstanceOf[Box].getWidth}"))
+      img.worldRoot.getChildren.removeIf(x=> {
+        (!img.objects.contains(x) && x.isInstanceOf[Box])})
 
       oct match {
         case OcNode(coords, _, _, _, _, _, _, _, _) => {

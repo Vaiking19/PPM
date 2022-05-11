@@ -1,12 +1,7 @@
-import InitSubScene.cameraView
-import InitSubScene_text._
-import Utils.{getClass, _}
+import InitSubScene.worldRoot
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
-import javafx.geometry.{Insets, Pos}
 import javafx.scene._
-import javafx.scene.layout.StackPane
-import javafx.scene.paint.Color
 import javafx.stage.Stage
 
 import scala.annotation.tailrec
@@ -20,7 +15,7 @@ class Main_visual extends Application {
 
     stage.setTitle("PPM Project 21/22")
     val fxmlLoader =
-      new FXMLLoader(getClass.getResource("Controller.fxml"))
+      new FXMLLoader(getClass.getResource("Controller1.fxml"))
     val mainViewRoot: Parent = fxmlLoader.load()
     val graphicScene = new Scene(mainViewRoot)
     stage.setScene(graphicScene)
@@ -41,9 +36,7 @@ class Main_visual extends Application {
 
 object FxApp {
 
-  //  val images:ImageCollection = new ImageCollection(new Group(getWiredbox(32,255,0,0),
-  //    getCamVolume(0,0,255),getLineX(200,Color.GREEN),getLineY(200,Color.YELLOW),
-  //    getLineZ(200,Color.AQUAMARINE)),readFromFile(s"src/$userInput.txt")) //relative path
+//    val images:ImageCollection = new ImageCollection(worldRoot,readFromFile(s"src/$userInput.txt")) //relative path
 
   //  val tree = makeTree(new Placement((0, 0, 0), 32.0), getWiredbox(32,255,0,0), images.objects,images.worldRoot)
 

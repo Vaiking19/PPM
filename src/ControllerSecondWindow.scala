@@ -1,22 +1,14 @@
-import javafx.event._
 import javafx.fxml.FXML
 import javafx.scene.control.{Button, TextField}
-import javafx.scene.SubScene
-import javafx.stage.FileChooser.ExtensionFilter
 import javafx.stage._
 
-import java.io.File
-
-class Controller {
+class ControllerSecondWindow {
 
 //  @FXML
 //  private var subScene1:SubScene = _
 
   @FXML
-  private var fieldText1: TextField = _
-
-  @FXML
-  private var button1:Button = _
+  private var button2:Button = _
 
   //method automatically invoked after the @FXML fields have been injected
 //  @FXML
@@ -26,9 +18,7 @@ class Controller {
 //    subScene1.setRoot(InitSubScene.root)
 //  }
 
-  def onButton1Clicked():Unit = {
-
-    val input = fieldText1.getText()
+  def onButton2Clicked():Unit = {
 
     val stage:Stage = new Stage()
     val fileChooser:FileChooser = new FileChooser()
