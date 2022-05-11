@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <Label layoutX="126.0" layoutY="100.0" text="Please input the file name and click the &quot;Go!&quot; Button" />
-      <TextField layoutX="186.0" layoutY="131.0" />
+      <TextField fx:id="fieldText1" layoutX="211.0" layoutY="159.0" />
+      <Label layoutX="191.0" layoutY="130.0" text="Please input the file name and click &quot;Go!&quot;" />
+      <Button fx:id="button1" layoutX="248.0" layoutY="240.0" mnemonicParsing="false" onMouseClicked="#onButton1Clicked" text="Go!" />
+      <SubScene fx:id="subScene1" height="126.0" layoutX="14.0" layoutY="14.0" width="150.0">
+        <root>
+          <Region />
+        </root>
+      </SubScene>
    </children>
 </AnchorPane>

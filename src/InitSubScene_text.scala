@@ -1,6 +1,4 @@
-import InitSubScene.{camera, cameraView, root, subScene}
-import Utils.{isInsideObj, newColour}
-import javafx.geometry.{Insets, Pos}
+import Utils._
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.{Color, PhongMaterial}
 import javafx.scene.shape.{Box, Cylinder, DrawMode, Line}
@@ -143,4 +141,3 @@ object InitSubScene_text {
 
 
 }
-
