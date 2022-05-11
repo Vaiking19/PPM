@@ -168,7 +168,6 @@ object Utils {
     box.setTranslateZ(placement._1._3 + sizeDaCox / 2)
     box.setMaterial(newColour(255,0,0))
     box.setDrawMode(DrawMode.LINE)
-
     box
   }
 
@@ -314,31 +313,21 @@ object Utils {
   }
 
   def scaleList(fact : Double, list: List[Node]) : List[Node] = {
-    list match{
+    list match {
       case Nil => Nil
-      case head :: tail =>
-
+      case head :: tail =>{
         head.setTranslateX(head.getTranslateX * fact)
         head.setTranslateY(head.getTranslateY * fact)
         head.setTranslateZ(head.getTranslateZ * fact)
-        head match {
-          case cylinder: Cylinder =>
-            cylinder.setRadius(cylinder.getRadius * fact)
-            cylinder.setHeight(cylinder.getHeight * fact)
-          case _ =>
-            //Criar novo objeto box com escala modificada?
-            val size = head.asInstanceOf[Box].getWidth
-            println(s"antes de escalado ${size}")
-            val fat = size * fact
-            println(s"antes de escalado ${fat}")
-            head.setScaleX(size * fact)
-            head.setScaleY(size * fact)
-            head.setScaleZ(size * fact)
-           // println(s"depois de escalado ${head.asInstanceOf[Box].}")
-        }
+
+        head.setScaleX(head.getScaleX * fact)
+        head.setScaleY(head.getScaleY * fact)
+        head.setScaleZ(head.getScaleZ * fact)
+      }
         head :: scaleList(fact, tail)
     }
   }
+
 
   //-------------------------------------------------------------------------------------//
 

@@ -70,8 +70,18 @@ object ImageCollection {
           val oldBox = createBox(coords) //caixa  tamanho original
           val newBox = createBox(placement)
           img.worldRoot.getChildren.add(newBox)
+          img.objects.map(x => println(s" objecto antes ${x.getScaleX}"))
           val scaledList = scaleList(fact, getObjectsInsideBox(oldBox,img.objects,img.worldRoot))
+          scaledList.map(x => println(s" objecto depois ${x.getScaleX}"))
           val newTree = makeTree(placement, scaledList, img.worldRoot)
+
+          img.worldRoot.getChildren.removeIf(x=> {
+            img.objects.contains(x)
+          })
+
+          scaledList.map(x => {
+            img.worldRoot.getChildren.add(x)
+          })
 
           newTree
         }
@@ -81,6 +91,8 @@ object ImageCollection {
           val newBox = createBox(placement)
           img.worldRoot.getChildren.add(newBox)
           val scaledList = scaleList(fact, img.objects)
+//          img.worldRoot.getChildren.add(scaledList.head)
+
           val newTree = makeTree(placement, scaledList, img.worldRoot)
 
           newTree
