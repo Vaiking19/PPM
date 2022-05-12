@@ -6,12 +6,16 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSecondWindow">
    <children>
-      <Label layoutX="117.0" layoutY="174.0" text="Click in the button below and choose the file you wish to import" />
-      <Button fx:id="button2" layoutX="241.0" layoutY="207.0" mnemonicParsing="false" onMouseClicked="#onButton2Clicked" text="Choose File" />
-      <SubScene fx:id="subScene1" height="126.0" layoutX="14.0" layoutY="14.0" width="150.0">
+      <SubScene fx:id="subScene1" height="400.0" layoutX="-2.0" onMouseClicked="#initialize" width="385.0">
         <root>
           <Region />
         </root>
       </SubScene>
+      <Button fx:id="button1" layoutX="467.0" layoutY="116.0" mnemonicParsing="false" onMouseClicked="#Sepia" text="Sepia" />
+      <Button fx:id="button2" layoutX="442.0" layoutY="154.0" mnemonicParsing="false" onMouseClicked="#RemoveGreen" text="Remove Green" />
+      <Button fx:id="mouseUp" layoutX="482.0" layoutY="238.0" mnemonicParsing="false" onMouseClicked="#MouseUp" text="Up" />
+      <Button fx:id="mouseDown" layoutX="474.0" layoutY="264.0" mnemonicParsing="false" onMouseClicked="#MouseDown" text="Down" />
+      <Slider fx:id="slider1" layoutX="419.0" layoutY="61.0" max="20.0" min="0.0078125" onMouseClicked="#ScaleTree" showTickLabels="true" showTickMarks="true" />
+      <Label layoutX="393.0" layoutY="26.0" text="Scale the tree by adjusting the slider" />
    </children>
 </AnchorPane>

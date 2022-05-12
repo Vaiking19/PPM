@@ -1,34 +1,33 @@
+import InitSubScene._
+import Utils._
 import javafx.fxml._
 import javafx.scene.control._
 import javafx.scene._
+import javafx.stage._
 
 class ControllerFirstWindow {
 
-  @FXML
-  var button1: Button = _
-
-  @FXML
-  var button2: Button = _
+  @FXML private var button1: Button = _
 
   def OnButton1Clicked(): Unit = {
 
-//    val secondStage: Stage = new Stage()
-    /*secondStage.setHeight(100)
-    secondStage.setWidth(100)
-    secondStage.centerOnScreen()*/
-//    secondStage.initModality(Modality.APPLICATION_MODAL)
-//    secondStage.initOwner(button1.getScene().getWindow)
+    val stage:Stage = new Stage()
+    val fileChooser:FileChooser = new FileChooser()
+    fileChooser.setTitle("Open Resource File")
+
+    val path = fileChooser.showOpenDialog(stage).getName
+    println(s"${path}")
+
+    val fileObjects = readFromFile(s"src/$path")
+    FxApp.images = new ImageCollection(worldRoot,fileObjects)
+    FxApp.tree = makeTree(new Placement((0, 0, 0), 32.0), FxApp.images.objects,FxApp.images.worldRoot)
+
+//    button2.setVisible(true)
+
     val fxmlLoader2 = new FXMLLoader(getClass.getResource("Controller2.fxml"))
     val mainViewRoot: Parent = fxmlLoader2.load()
-//    val scenario = new Scene(mainViewRoot)
-//    secondStage.setScene(scenario)
-//    secondStage.show()
+
     button1.getScene.setRoot(mainViewRoot)
   }
 
-  def OnButton2Clicked(): Unit = {
-    val fxmlLoader3 = new FXMLLoader(getClass.getResource("Controller3.fxml"))
-    val mainViewRoot: Parent = fxmlLoader3.load()
-    button2.getScene.setRoot(mainViewRoot)
-  }
 }

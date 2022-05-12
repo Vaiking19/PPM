@@ -65,7 +65,7 @@ object InitSubScene{
   cameraView.getCamera.setTranslateZ(-50)
   cameraView.startViewing
 
-  StackPane.setAlignment(cameraView, Pos.BOTTOM_RIGHT)
+  StackPane.setAlignment(cameraView, Pos.TOP_LEFT)
   StackPane.setMargin(cameraView, new Insets(3))
 
   val root = new StackPane(subScene,cameraView)
