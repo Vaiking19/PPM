@@ -18,13 +18,13 @@ object InitSubScene{
   blueMaterial.setDiffuseColor(Color.rgb(0,0,150))
 
   //3D objects
-  val lineX = new Line(0, 0, 200, 0)
+  val lineX = new Line(0, 0, 1000, 0)
   lineX.setStroke(Color.GREEN)
 
-  val lineY = new Line(0, 0, 0, 200)
+  val lineY = new Line(0, 0, 0, 1000)
   lineY.setStroke(Color.YELLOW)
 
-  val lineZ = new Line(0, 0, 200, 0)
+  val lineZ = new Line(0, 0, 1000, 0)
   lineZ.setStroke(Color.LIGHTSALMON)
   lineZ.getTransforms.add(new Rotate(-90, 0, 0, 0, Rotate.Y_AXIS))
 
@@ -39,6 +39,7 @@ object InitSubScene{
   // Camera
   val camera = new PerspectiveCamera(true)
 
+  //bigger camera tha display from a far
   val cameraTransform = new CameraTransformer
   cameraTransform.setTranslate(0, 0, 0)
   cameraTransform.getChildren.add(camera)
@@ -55,6 +56,7 @@ object InitSubScene{
   subScene.setFill(Color.DARKSLATEGRAY)
   subScene.setCamera(camera)
 
+  //camera in the corner
   val cameraView = new CameraView(subScene)
   cameraView.setFirstPersonNavigationEabled(true)
   cameraView.setFitWidth(350)
@@ -72,8 +74,8 @@ object InitSubScene{
 
 //  val scene = new Scene(root, 810, 610, true, SceneAntialiasing.BALANCED)
 
-  root.setOnMouseClicked((event) => {
-    camVolume.setTranslateX(camVolume.getTranslateX + 2)
-  })
+//  root.setOnMouseClicked((event) => {
+//    camVolume.setTranslateX(camVolume.getTranslateX + 2)
+//  })
 }
 

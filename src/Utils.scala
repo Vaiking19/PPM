@@ -5,7 +5,7 @@ import javafx.scene.{Group, Node, Parent, PerspectiveCamera, Scene, SceneAntiali
 import javafx.scene.paint.{Color, Material, PhongMaterial}
 import javafx.scene.shape.{Box, Cylinder, DrawMode, Line, Shape3D}
 import javafx.stage.Stage
-
+import scala.util.{Try, Success, Failure}
 import scala.annotation.tailrec
 
 object Utils {
@@ -64,15 +64,21 @@ object Utils {
     newColor
   }
 
-  def readFromFile(file: String): List[Node] = {
+ def readFromFile(file: String): List[Node] = {
     val bufferedSource = Source.fromFile(file)
 
     var boxArr: Array[Shape3D] = Array()
     var cyArr: Array[Shape3D] = Array()
 
-    for (line <- bufferedSource.getLines) {
+    if(bufferedSource == null){
+      println("The file chosen does not contain the necessary information. Please try another")
+    }
+
+     for (line <- bufferedSource.getLines) {
+
       val new_item = line.split(" ")
       val objName = new_item(0)
+
       val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)","").split(",")
       val colourList = temp.toList.map(x => x.toInt)
 
@@ -95,6 +101,8 @@ object Utils {
             boxArr.last.setScaleY(new_item(6).toDouble)
             boxArr.last.setScaleZ(new_item(7).toDouble)
             boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
+
+          case _ => println("This line does not match the necessary requirements")
         }
       }
       else {
@@ -116,9 +124,11 @@ object Utils {
             boxArr.last.setScaleY(1)
             boxArr.last.setScaleZ(1)
             boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
+
+          case _ => println("This line does not match the necessary requirements")
         }
       }
-    }
+      }
     val objects: List[Node]  = cyArr.toList.concat(boxArr.toList)
     bufferedSource.close
     objects
@@ -273,6 +283,7 @@ object Utils {
 
     //println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
     val box = createBox(p)
+    worldRoot.getChildren.add(box)
     //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
     val wiredListObjects:List[Node] = getObjectsInsideBox(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX

@@ -7,7 +7,9 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 
+import java.nio.file.{Files, Paths}
 import scala.annotation.tailrec
+import scala.util.Try
 
 class Main_text extends Application {
 
@@ -26,7 +28,20 @@ class Main_text extends Application {
     val placement1 = new Placement((0, 0, 0), 32.0)
     val camVolume = createCamVolume(0,0,255)
 
+
+    if(!Files.exists(Paths.get("src/"+userInput+".txt"))){
+     println("File not existent. Please select another")
+      stop()
+
+    }else{
+
+      if(readFromFile(s"src/$userInput.txt").isEmpty){
+        println("File is Empty. Please select another")
+        stop()
+      }
+
     val fileObjects = readFromFile(s"src/$userInput.txt")
+
 
     val images:ImageCollection = new ImageCollection(new Group(createWiredbox(32,255,0,0),
       camVolume,createLineX(200,Color.GREEN),createLineY(200,Color.YELLOW),
@@ -88,6 +103,7 @@ class Main_text extends Application {
     })
     stage.setScene(scene._1)
     stage.show
+  }
   }
 
 

@@ -3,7 +3,6 @@ import Utils._
 import javafx.fxml.FXML
 import javafx.scene.SubScene
 import javafx.scene.control._
-import javafx.scene.layout.AnchorPane
 
 class ControllerSecondWindow {
 
@@ -14,7 +13,6 @@ class ControllerSecondWindow {
   @FXML private var mouseDown:Button = _
   @FXML private var grow:Button = _
   @FXML private var decrease:Button = _
-  @FXML private var pane1:AnchorPane = _
 
 
   @FXML
@@ -22,7 +20,6 @@ class ControllerSecondWindow {
     InitSubScene.subScene.widthProperty.bind(subScene1.widthProperty)
     InitSubScene.subScene.heightProperty.bind(subScene1.heightProperty)
     subScene1.setRoot(InitSubScene.root)
-    pane1.setMinSize(1000.0,1000.0)
   }
 
   //method automatically invoked after the @FXML fields have been injected
@@ -44,11 +41,16 @@ class ControllerSecondWindow {
   }
 
   def MouseUp(): Unit = {
-      camVolume.setTranslateX(camVolume.getTranslateX + 2)
+    camVolume.setTranslateX(camVolume.getTranslateX + 2)
+    cameraTransform.setTranslateX(cameraTransform.getTranslateX + 2)
+    cameraView.setX(cameraView.getX + 2)
+    cameraView.getT
   }
 
   def MouseDown(): Unit = {
-          camVolume.setTranslateX(camVolume.getTranslateX - 2)
+    camVolume.setTranslateX(camVolume.getTranslateX - 2)
+    cameraTransform.setTranslateX(cameraTransform.getTranslateX - 2)
+    cameraView.setX(cameraView.getX - 2)
   }
 
 }
