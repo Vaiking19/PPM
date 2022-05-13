@@ -158,30 +158,12 @@ object Utils {
           head :: getObjectsInsideBox(box, tail,worldRoot)
         else {
 //          worldRoot.getChildren.remove(head)
+          worldRoot.getChildren.remove(head)
           getObjectsInsideBox(box, tail,worldRoot)
         }
       }
     }
 
-  //Função auxiliar para criar a lista com todos os elementos contidos
-  def getList(a: List[Node], c: Box, option: Int): List[Node] = {
-    a match {
-      case Nil => Nil
-      case head :: tail => {
-        if (option == 1) {
-          if (c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent)) {
-            //            println("cubo contem? " + c.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-            head :: getList(tail, c, option)
-          }
-          else getList(tail, c, option)
-        } else {
-          if (c.getBoundsInParent.intersects(head.asInstanceOf[Shape3D].getBoundsInParent))
-            head :: getList(tail, c, option)
-          else getList(tail, c, option)
-        }
-      }
-    }
-  }
 
   def createBox(placement: Placement):Box = {
     val sizeDaCox = placement._2
@@ -280,7 +262,6 @@ object Utils {
             val sec:Section = new Section(((secX,secY,secZ),head.getHeight),boxElements)
             OcLeaf(sec) :: generateChild(tail,listObjects,worldRoot)
           } else {
-
             //caso os filhos nao interceptem irá ser necessario fazer com que sejam criados os nodos filhos
             OcNode[Placement](new Placement((secX, secY, secZ),head.getWidth),generateChild(listNextBoxes,listObjects,worldRoot).apply(0),generateChild(listNextBoxes,listObjects,worldRoot).apply(1),
               generateChild(listNextBoxes,listObjects, worldRoot).apply(2),generateChild(listNextBoxes,listObjects,worldRoot).apply(3),generateChild(listNextBoxes,listObjects,worldRoot).apply(4),
@@ -295,7 +276,6 @@ object Utils {
   //Funcao para criar a OcTree como deve ser
   def makeTree(p: Placement, list: List[Node], worldRoot: Group): Octree[Placement] = {
 
-    //println(s" 43. elemetos do world ${worldRoot.getChildren.size()}")
     val box = createBox(p)
     worldRoot.getChildren.add(box)
     //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS

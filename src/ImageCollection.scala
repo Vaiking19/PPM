@@ -11,7 +11,6 @@ case class ImageCollection(worldRoot: Group, objects :List[Node]) {
   def updateWorld(): Group = ImageCollection.updateWorld(this)
   def updateObjects(lst: List[Node]): List[Node] = ImageCollection.updateObjects(this.objects,lst)
   def scaleOctree(fact: Double, oct:Octree[Placement]): Octree[Placement] = ImageCollection.scaleOctree(this,fact,oct)
-  //def mapColourEffect(func: Color => Color, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.mapColourEffect(this,func,oct,world,objects)
   def mapColourEffect(func: Color => Color, oct:Octree[Placement]) :Octree[Placement] = ImageCollection.mapColourEffect(this,func,oct)
 }
 
@@ -40,7 +39,6 @@ object ImageCollection {
     else {
 
 //      img.worldRoot.getChildren.toArray().foreach(x => if(x.isInstanceOf[Box]) println(s"a remover object: ${x.asInstanceOf[Box].getDrawMode} and ${x.asInstanceOf[Box].getWidth}"))
-
       img.worldRoot.getChildren.removeIf(x=> {
         (!img.objects.contains(x) && x.isInstanceOf[Box])})
 

@@ -12,14 +12,14 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../Transferências/javafx-sdk-18/lib" />
+          <root url="file://$USER_HOME$/Transferências/javafx-sdk-18/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/../../Transferências/javafx-sdk-18/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Transferências/javafx-sdk-18/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="lib1" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

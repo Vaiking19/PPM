@@ -34,13 +34,10 @@ class Main_visual extends Application {
 }
 
 object FxApp {
-
     var images:ImageCollection = _
-
     var tree: Octree[Placement] = _
 
   def main(args: Array[String]): Unit = {
     Application.launch(classOf[Main_visual], args: _*)
-
   }
 }

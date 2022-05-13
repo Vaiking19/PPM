@@ -20,9 +20,9 @@ class ControllerFirstWindow {
   @FXML private var slider1: Slider = _
 
   def setSizeFirst(): Unit = {
-          button1.setVisible(true)
-          label1.setVisible(true)
-        }
+    button1.setVisible(true)
+    label1.setVisible(true)
+  }
 
   def OnButton1Clicked(): Unit = {
 
@@ -36,11 +36,18 @@ class ControllerFirstWindow {
     val fileObjects = readFromFile(s"src/$path")
     FxApp.images = new ImageCollection(worldRoot,fileObjects)
 
-//    val size = Integer.parseInt(textField1.getText)
-    val size = radio1.get
+    val size : Int =
+      if(radio1.isSelected) {
+        Integer.parseInt(radio1.getText)
+      }else if(radio2.isSelected) {
+        Integer.parseInt(radio2.getText)
+      }else if(radio3.isSelected) {
+        Integer.parseInt(radio3.getText)
+      }else
+        Integer.parseInt(radio4.getText)
 
     FxApp.tree = makeTree(new Placement((0,0,0),size), FxApp.images.objects,FxApp.images.worldRoot)
-//    FxApp.images.updateWorld
+    FxApp.images.updateWorld
 
     val fxmlLoader2 = new FXMLLoader(getClass.getResource("Controller2.fxml"))
     val mainViewRoot: Parent = fxmlLoader2.load()
