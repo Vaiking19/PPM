@@ -8,7 +8,7 @@ import scala.annotation.tailrec
 
 case class ImageCollection(worldRoot: Group, objects :List[Node]) {
 
-  def getUpdatedWorld(): Group = ImageCollection.updateWorld(this)
+  def updateWorld(): Group = ImageCollection.updateWorld(this)
   def updateObjects(lst: List[Node]): List[Node] = ImageCollection.updateObjects(this.objects,lst)
   def scaleOctree(fact: Double, oct:Octree[Placement]): Octree[Placement] = ImageCollection.scaleOctree(this,fact,oct)
   //def mapColourEffect(func: Color => Color, oct:Octree[Placement], world: Group, objects: List[Node]):(Octree[Placement],Group,List[Node],Placement) = ImageCollection.mapColourEffect(this,func,oct,world,objects)

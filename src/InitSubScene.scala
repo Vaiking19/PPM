@@ -1,5 +1,6 @@
+import Utils.changeSectionColorIfCamInside
 import javafx.geometry.{Insets, Pos}
-import javafx.scene.{Group, PerspectiveCamera, Scene, SceneAntialiasing, SubScene}
+import javafx.scene.{Group, Node, PerspectiveCamera, Scene, SceneAntialiasing, SubScene}
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.{Color, PhongMaterial}
 import javafx.scene.shape.{Cylinder, DrawMode, Line}
@@ -74,8 +75,9 @@ object InitSubScene{
 
 //  val scene = new Scene(root, 810, 610, true, SceneAntialiasing.BALANCED)
 
-//  root.setOnMouseClicked((event) => {
-//    camVolume.setTranslateX(camVolume.getTranslateX + 2)
-//  })
+  root.setOnMouseClicked((event) => {
+    camVolume.setTranslateX(camVolume.getTranslateX + 2)
+    changeSectionColorIfCamInside(FxApp.images.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], camVolume)
+  })
 }
 

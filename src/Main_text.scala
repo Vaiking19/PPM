@@ -87,7 +87,7 @@ class Main_text extends Application {
     }
 
     //val imgRoot = mainLoop(tree, new ImageCollection(images.getUpdatedWorld,images.objects))
-    mainLoop(tree, new ImageCollection(images.getUpdatedWorld(),images.objects))
+    mainLoop(tree, new ImageCollection(images.updateWorld(),images.objects))
 
     //USER TEXT INTERFACE
 

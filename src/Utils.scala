@@ -31,7 +31,7 @@ object Utils {
     println("Please choose a number: ")
     println("1 - OcScale")
     println("2 - Colour effect ")
-    println("Please press any key to show the results")
+    println("Select any other number to show the output")
     println("Number:")
   }
 
@@ -64,75 +64,89 @@ object Utils {
     newColor
   }
 
- def readFromFile(file: String): List[Node] = {
-    val bufferedSource = Source.fromFile(file)
-
-    var boxArr: Array[Shape3D] = Array()
-    var cyArr: Array[Shape3D] = Array()
-
-    if(bufferedSource == null){
-      println("The file chosen does not contain the necessary information. Please try another")
+  def isItInt(s : String):Boolean = {
+    def makeInt(s: String): Try[Int] = {
+      Try(s.trim.toInt)
     }
-
-     for (line <- bufferedSource.getLines) {
-
-      val new_item = line.split(" ")
-      val objName = new_item(0)
-
-      val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)","").split(",")
-      val colourList = temp.toList.map(x => x.toInt)
-
-      if (new_item.size > 2) {
-        objName match {
-          case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-            cyArr.last.setTranslateX(new_item(2).toInt)
-            cyArr.last.setTranslateY(new_item(3).toInt)
-            cyArr.last.setTranslateZ(new_item(4).toInt)
-            cyArr.last.setScaleX(new_item(5).toDouble)
-            cyArr.last.setScaleY(new_item(6).toDouble)
-            cyArr.last.setScaleZ(new_item(7).toDouble)
-            cyArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
-          case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-            boxArr.last.setTranslateX(new_item(2).toInt)
-            boxArr.last.setTranslateY(new_item(3).toInt)
-            boxArr.last.setTranslateZ(new_item(4).toInt)
-            boxArr.last.setScaleX(new_item(5).toDouble)
-            boxArr.last.setScaleY(new_item(6).toDouble)
-            boxArr.last.setScaleZ(new_item(7).toDouble)
-            boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
-          case _ => println("This line does not match the necessary requirements")
-        }
-      }
-      else {
-        objName match {
-          case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-            cyArr.last.setTranslateX(0)
-            cyArr.last.setTranslateY(0)
-            cyArr.last.setTranslateZ(0)
-            cyArr.last.setScaleX(1)
-            cyArr.last.setScaleY(1)
-            cyArr.last.setScaleZ(1)
-            cyArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
-          case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-            boxArr.last.setTranslateX(0)
-            boxArr.last.setTranslateY(0)
-            boxArr.last.setTranslateZ(0)
-            boxArr.last.setScaleX(1)
-            boxArr.last.setScaleY(1)
-            boxArr.last.setScaleZ(1)
-            boxArr.last.setMaterial(newColour(colourList(0),colourList(1),colourList(2)))
-
-          case _ => println("This line does not match the necessary requirements")
-        }
-      }
-      }
-    val objects: List[Node]  = cyArr.toList.concat(boxArr.toList)
-    bufferedSource.close
-    objects
+    makeInt(s) match {
+      case Success(_) => true
+      case Failure(_) => false
+    }
   }
+
+ def readFromFile(file: String): List[Node] = {
+   val bufferedSource = Source.fromFile(file)
+
+   var boxArr: Array[Shape3D] = Array()
+   var cyArr: Array[Shape3D] = Array()
+
+   if (bufferedSource == null) {
+     println("The file chosen does not contain the necessary information. Please try another")
+   }
+
+   for (line <- bufferedSource.getLines) {
+
+     if (!line.isEmpty || !line.isBlank) {
+
+       val new_item = line.split(" ")
+       val objName = new_item(0)
+
+       val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)", "").split(",")
+       val colourList = temp.toList.map(x => x.toInt)
+
+       if (new_item.size > 2) {
+         objName match {
+           case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
+             cyArr.last.setTranslateX(new_item(2).toInt)
+             cyArr.last.setTranslateY(new_item(3).toInt)
+             cyArr.last.setTranslateZ(new_item(4).toInt)
+             cyArr.last.setScaleX(new_item(5).toDouble)
+             cyArr.last.setScaleY(new_item(6).toDouble)
+             cyArr.last.setScaleZ(new_item(7).toDouble)
+             cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+
+           case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
+             boxArr.last.setTranslateX(new_item(2).toInt)
+             boxArr.last.setTranslateY(new_item(3).toInt)
+             boxArr.last.setTranslateZ(new_item(4).toInt)
+             boxArr.last.setScaleX(new_item(5).toDouble)
+             boxArr.last.setScaleY(new_item(6).toDouble)
+             boxArr.last.setScaleZ(new_item(7).toDouble)
+             boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+
+           case _ => println("This line does not match the necessary requirements")
+         }
+       }
+       else {
+         objName match {
+           case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
+             cyArr.last.setTranslateX(0)
+             cyArr.last.setTranslateY(0)
+             cyArr.last.setTranslateZ(0)
+             cyArr.last.setScaleX(1)
+             cyArr.last.setScaleY(1)
+             cyArr.last.setScaleZ(1)
+             cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+
+           case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
+             boxArr.last.setTranslateX(0)
+             boxArr.last.setTranslateY(0)
+             boxArr.last.setTranslateZ(0)
+             boxArr.last.setScaleX(1)
+             boxArr.last.setScaleY(1)
+             boxArr.last.setScaleZ(1)
+             boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+
+           case _ => println("This line does not match the necessary requirements")
+         }
+       }
+     }
+   }
+   val objects: List[Node] = cyArr.toList.concat(boxArr.toList)
+   bufferedSource.close
+   objects
+
+ }
 
   //AUXILIAR
   //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX

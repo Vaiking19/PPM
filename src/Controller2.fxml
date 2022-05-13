@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.SubScene?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1010.0" scaleShape="false" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSecondWindow">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1010.0" scaleShape="false" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSecondWindow">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="833.800048828125" minWidth="10.0" prefWidth="780.2000122070312" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="723.999951171875" minWidth="10.0" prefWidth="229.79998779296875" />
@@ -21,14 +28,30 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <SubScene fx:id="subScene1" height="610.0" onMouseMoved="#initialize" width="779.0">
+            <SubScene fx:id="subScene1" height="610.0" onContextMenuRequested="#initialize" width="810.0">
               <root>
                 <Region />
               </root>
+               <fill>
+                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </RadialGradient>
+               </fill>
             </SubScene>
          </children>
       </GridPane>
-      <GridPane prefHeight="610.0" prefWidth="225.0" GridPane.columnIndex="1">
+      <GridPane prefHeight="610.0" prefWidth="194.0" GridPane.columnIndex="1">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -42,18 +65,18 @@
             <RowConstraints />
         </rowConstraints>
          <children>
-            <Label text="Moves the mouse cursor to the right (increase in X axis)" wrapText="true" GridPane.rowIndex="4" />
-            <Label text="Decrease the size of tree by x0.5" wrapText="true" GridPane.rowIndex="1" />
-            <Button fx:id="mouseDown" mnemonicParsing="false" onMouseClicked="#MouseDown" text="Down" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Button fx:id="button1" mnemonicParsing="false" onMouseClicked="#Sepia" text="Sepia" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="button2" mnemonicParsing="false" onMouseClicked="#RemoveGreen" prefHeight="42.0" prefWidth="61.0" text="Remove Green" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Button fx:id="mouseUp" mnemonicParsing="false" onMouseClicked="#MouseUp" text="Up" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Button fx:id="decrease" mnemonicParsing="false" onMouseClicked="#HalveTree" text="Halve Tree" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="grow" mnemonicParsing="false" onMouseClicked="#GrowTree" text="Grow Tree" GridPane.columnIndex="1" />
-            <Label text="Increase the size of the tree by x2" wrapText="true" />
-            <Label text="Changes the colour of the objects inside the tree" wrapText="true" GridPane.rowIndex="2" />
-            <Label text="Changes the colour of the objects inside the tree" wrapText="true" GridPane.rowIndex="3" />
-            <Label text="Move the mouse cursor to the right (decrease in X axis)" wrapText="true" GridPane.rowIndex="5" />
+            <Label text="Moves the mouse cursor to the right (increase in X axis)" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Label text="Decrease the size of tree by x0.5" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="mouseDown" mnemonicParsing="false" onMouseClicked="#MouseDown" text="Left" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+            <Button fx:id="button1" mnemonicParsing="false" onMouseClicked="#Sepia" text="Sepia" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Button fx:id="button2" mnemonicParsing="false" onMouseClicked="#RemoveGreen" prefHeight="42.0" prefWidth="61.0" text="Remove Green" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Button fx:id="mouseUp" mnemonicParsing="false" onMouseClicked="#MouseUp" text="Right" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Button fx:id="decrease" mnemonicParsing="false" onMouseClicked="#HalveTree" text="Halve Tree" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="grow" mnemonicParsing="false" onMouseClicked="#GrowTree" text="Grow Tree" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label text="Increase the size of the tree by x2" wrapText="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label text="Changes the colour of the objects inside the tree" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Label text="Changes the colour of the objects inside the tree" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Label prefHeight="88.0" prefWidth="115.0" text="Move the mouse cursor to the left (decrease in X axis)" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </children>
