@@ -150,18 +150,6 @@ object Utils {
 
   //AUXILIAR
   //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
-//  def getObjectsInsideBox(box: Box, listObject: List[Node], worldRoot: Group): List[Node] =
-//    listObject match {
-//      case Nil => Nil
-//      case head :: tail => {
-//        if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-//          head :: getObjectsInsideBox(box, tail,worldRoot)
-//        else {
-//          worldRoot.getChildren.remove(head)
-//          getObjectsInsideBox(box, tail,worldRoot)
-//        }
-//      }
-//    }
 
   def getObjectsInsideBox(box: Box, listObject: List[Node]): List[Node] =
     listObject match {
