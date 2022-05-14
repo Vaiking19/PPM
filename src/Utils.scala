@@ -150,16 +150,27 @@ object Utils {
 
   //AUXILIAR
   //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
-  def getObjectsInsideBox(box: Box, listObject: List[Node], worldRoot: Group): List[Node] =
+//  def getObjectsInsideBox(box: Box, listObject: List[Node], worldRoot: Group): List[Node] =
+//    listObject match {
+//      case Nil => Nil
+//      case head :: tail => {
+//        if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
+//          head :: getObjectsInsideBox(box, tail,worldRoot)
+//        else {
+//          worldRoot.getChildren.remove(head)
+//          getObjectsInsideBox(box, tail,worldRoot)
+//        }
+//      }
+//    }
+
+  def getObjectsInsideBox(box: Box, listObject: List[Node]): List[Node] =
     listObject match {
       case Nil => Nil
       case head :: tail => {
         if (box.getBoundsInParent.contains(head.asInstanceOf[Shape3D].getBoundsInParent))
-          head :: getObjectsInsideBox(box, tail,worldRoot)
+          head :: getObjectsInsideBox(box, tail)
         else {
-//          worldRoot.getChildren.remove(head)
-          worldRoot.getChildren.remove(head)
-          getObjectsInsideBox(box, tail,worldRoot)
+          getObjectsInsideBox(box, tail)
         }
       }
     }
@@ -247,7 +258,7 @@ object Utils {
         val secZ = head.getTranslateZ - head.getHeight/2
 
         //nodo filho nao tem nenhuma lista contida então é empty
-        val boxElements = getObjectsInsideBox(head,listObjects,worldRoot)
+        val boxElements = getObjectsInsideBox(head,listObjects)
 
         if (boxElements.isEmpty)
           OcEmpty :: generateChild(tail,listObjects,worldRoot)
@@ -274,13 +285,13 @@ object Utils {
 
 
   //Funcao para criar a OcTree como deve ser
-  def makeTree(p: Placement, list: List[Node], worldRoot: Group): Octree[Placement] = {
+  def makeTree(p: Placement, wiredListObjects: List[Node], worldRoot: Group): Octree[Placement] = {
 
     val box = createBox(p)
     worldRoot.getChildren.add(box)
     //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
-    val wiredListObjects:List[Node] = getObjectsInsideBox(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+//    val wiredListObjects:List[Node] = getObjectsInsideBox(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
 
     if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
 

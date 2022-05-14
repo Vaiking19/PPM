@@ -1,5 +1,5 @@
-import scala.util.{Try, Success, Failure}
-import InitSubScene._
+
+import InitSubScene.worldRoot
 import Utils._
 import javafx.fxml._
 import javafx.scene.control._
@@ -17,7 +17,7 @@ class ControllerFirstWindow {
 //  @FXML private var labelErr: Label = _
 //  @FXML private var labelErr2: Label = _
 //  @FXML private var labelErr3: Label = _
-  @FXML private var slider1: Slider = _
+
 
   def setSizeFirst(): Unit = {
     button1.setVisible(true)
@@ -33,10 +33,8 @@ class ControllerFirstWindow {
     val path = fileChooser.showOpenDialog(stage).getName
     println(s"${path}")
 
-    val fileObjects = readFromFile(s"src/$path")
-    FxApp.images = new ImageCollection(worldRoot,fileObjects)
 
-    val size : Int =
+    val size: Double =
       if(radio1.isSelected) {
         Integer.parseInt(radio1.getText)
       }else if(radio2.isSelected) {
@@ -46,7 +44,12 @@ class ControllerFirstWindow {
       }else
         Integer.parseInt(radio4.getText)
 
-    FxApp.tree = makeTree(new Placement((0,0,0),size), FxApp.images.objects,FxApp.images.worldRoot)
+    val placement1:Placement = new Placement((0,0,0),size)
+    val fileObjects = getObjectsInsideBox(createBox(placement1),readFromFile(s"src/$path"))
+    FxApp.images = new ImageCollection(worldRoot,fileObjects)
+
+
+    FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
     FxApp.images.updateWorld
 
     val fxmlLoader2 = new FXMLLoader(getClass.getResource("Controller2.fxml"))

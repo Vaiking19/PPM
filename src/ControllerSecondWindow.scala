@@ -16,9 +16,6 @@ class ControllerSecondWindow {
 
   @FXML
   def initialize(): Unit = {
-    //FxApp.tree = makeTree(new Placement((0, 0, 0), 32.0), FxApp.images.objects,FxApp.images.worldRoot)
-
-
     InitSubScene.subScene.widthProperty.bind(subScene1.widthProperty)
     InitSubScene.subScene.heightProperty.bind(subScene1.heightProperty)
     subScene1.setRoot(InitSubScene.root)
@@ -28,10 +25,12 @@ class ControllerSecondWindow {
   //  @FXML
     def Sepia(): Unit = {
     FxApp.tree = FxApp.images.mapColourEffect(applySepiaToList, FxApp.tree)
+    changeSectionColorIfCamInside(FxApp.images.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], camVolume)
     }
 
   def RemoveGreen(): Unit = {
     FxApp.tree = FxApp.images.mapColourEffect(removeGreen, FxApp.tree)
+    changeSectionColorIfCamInside(FxApp.images.worldRoot.getChildren.toArray.toList.asInstanceOf[List[Node]], camVolume)
   }
 
   def GrowTree(): Unit = {

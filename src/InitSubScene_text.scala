@@ -46,29 +46,29 @@ object InitSubScene_text {
     wiredBox
   }
 
-  def createCylinder(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Cylinder = {
-    val cylinder1 = new Cylinder(0.5, 1, 10)
-    cylinder1.setTranslateX(transX)
-    cylinder1.setTranslateY(transY)
-    cylinder1.setTranslateZ(transZ)
-    cylinder1.setScaleX(scaleX)
-    cylinder1.setScaleY(scaleY)
-    cylinder1.setScaleZ(scaleZ)
-    cylinder1.setMaterial(newColour(color1, color2, color3))
-    cylinder1
-  }
-
-  def createBox(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Box = {
-    val box1 = new Box(0.5, 1, 10)
-    box1.setTranslateX(transX)
-    box1.setTranslateY(transY)
-    box1.setTranslateZ(transZ)
-    box1.setScaleX(scaleX)
-    box1.setScaleY(scaleY)
-    box1.setScaleZ(scaleZ)
-    box1.setMaterial(newColour(color1, color2, color3))
-    box1
-  }
+//  def createCylinder(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Cylinder = {
+//    val cylinder1 = new Cylinder(0.5, 1, 10)
+//    cylinder1.setTranslateX(transX)
+//    cylinder1.setTranslateY(transY)
+//    cylinder1.setTranslateZ(transZ)
+//    cylinder1.setScaleX(scaleX)
+//    cylinder1.setScaleY(scaleY)
+//    cylinder1.setScaleZ(scaleZ)
+//    cylinder1.setMaterial(newColour(color1, color2, color3))
+//    cylinder1
+//  }
+//
+//  def createBox(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Box = {
+//    val box1 = new Box(0.5, 1, 10)
+//    box1.setTranslateX(transX)
+//    box1.setTranslateY(transY)
+//    box1.setTranslateZ(transZ)
+//    box1.setScaleX(scaleX)
+//    box1.setScaleY(scaleY)
+//    box1.setScaleZ(scaleZ)
+//    box1.setMaterial(newColour(color1, color2, color3))
+//    box1
+//  }
 
   def createCamera(): PerspectiveCamera = {
     // Camera

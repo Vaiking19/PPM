@@ -51,7 +51,7 @@ object ImageCollection {
           img.worldRoot.getChildren.add(newBox)
 
 //          img.objects.map(x => println(s" objecto antes ${x.getScaleX}"))
-          val scaledList = scaleList(fact, getObjectsInsideBox(oldBox,img.objects,img.worldRoot))
+          val scaledList = scaleList(fact, getObjectsInsideBox(oldBox,img.objects))
 //          scaledList.map(x => println(s" objecto depois ${x.getScaleX}"))
           val newTree = makeTree(placement, scaledList, img.worldRoot)
 
@@ -92,8 +92,8 @@ object ImageCollection {
       case OcEmpty => OcEmpty
       case OcNode(coords, _, _, _, _, _, _, _, _) => {
         val box: Box = createBox(coords)
-        val wiredListObjects:List[Node] = getObjectsInsideBox(box,img.objects,img.worldRoot)    //LISTA OBJECTOS DA WIREBOX
-        val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
+//        val wiredListObjects:List[Node] = getObjectsInsideBox(box,img.objects)    //LISTA OBJECTOS DA WIREBOX
+        val newList = img.objects.asInstanceOf[List[Shape3D]]
         newList.map(x => {
           val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
           val newColor = func(color)
@@ -107,8 +107,8 @@ object ImageCollection {
       case OcLeaf(sec : Section) => {
         val placement: Placement = (sec._1._1, sec._1._2)
         val box: Box = createBox(placement)
-        val wiredListObjects:List[Node] = getObjectsInsideBox(box,img.objects,img.worldRoot)    //LISTA OBJECTOS DA WIREBOX
-        val newList = wiredListObjects.asInstanceOf[List[Shape3D]]
+//        val wiredListObjects:List[Node] = getObjectsInsideBox(box,img.objects)    //LISTA OBJECTOS DA WIREBOX
+        val newList = img.objects.asInstanceOf[List[Shape3D]]
         newList.map(x => {
           val color = x.getMaterial.asInstanceOf[PhongMaterial].getDiffuseColor
           val newColor = func(color)

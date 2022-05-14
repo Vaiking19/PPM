@@ -40,8 +40,7 @@ class Main_text extends Application {
         stop()
       }
 
-    val fileObjects = readFromFile(s"src/$userInput.txt")
-
+    val fileObjects = getObjectsInsideBox(createBox(placement1),readFromFile(s"src/$userInput.txt"))
 
     val images:ImageCollection = new ImageCollection(new Group(createWiredbox(32,255,0,0),
       camVolume,createLineX(200,Color.GREEN),createLineY(200,Color.YELLOW),
