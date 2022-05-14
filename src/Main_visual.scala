@@ -14,7 +14,7 @@ class Main_visual extends Application {
 
     stage.setTitle("PPM Project 21/22")
     val fxmlLoader =
-      new FXMLLoader(getClass.getResource("Controller_TEST.fxml"))
+      new FXMLLoader(getClass.getResource("Controller1.fxml"))
     val mainViewRoot: Parent = fxmlLoader.load()
     val graphicScene = new Scene(mainViewRoot)
     stage.setScene(graphicScene)
