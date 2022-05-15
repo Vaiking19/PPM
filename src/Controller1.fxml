@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerFirstWindow">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerFirstWindow">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
@@ -21,8 +17,8 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Slider fx:id="slider1" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" minorTickCount="1" prefHeight="38.0" prefWidth="568.0" showTickLabels="true" showTickMarks="true" value="24.0" GridPane.rowIndex="1" />
-      <Label text="Please choose in the slider a number up to 32 to set the Octree's size." GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Slider fx:id="slider1" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" minorTickCount="1" prefHeight="38.0" prefWidth="568.0" showTickLabels="true" showTickMarks="true" GridPane.rowIndex="1" />
+      <Label alignment="CENTER" text="Please choose in the slider a number up to 32 to set the Octree's size." GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <Button mnemonicParsing="false" onMouseClicked="#setSizeFirst" text="Set size" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button fx:id="button1" mnemonicParsing="false" onMouseClicked="#OnButton1Clicked" text="Import File" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
       <Label fx:id="label1" prefWidth="290.0" text="Select the file you want to import so you can start" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />

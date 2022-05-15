@@ -1,10 +1,7 @@
-import javafx.fxml.FXMLLoader
-
 import scala.io.Source
-import javafx.scene.{Group, Node, Parent, PerspectiveCamera, Scene, SceneAntialiasing, SubScene}
-import javafx.scene.paint.{Color, Material, PhongMaterial}
-import javafx.scene.shape.{Box, Cylinder, DrawMode, Line, Shape3D}
-import javafx.stage.Stage
+import javafx.scene.{Group, Node}
+import javafx.scene.paint.{Color, PhongMaterial}
+import javafx.scene.shape.{Box, Cylinder, DrawMode, Shape3D}
 import scala.util.{Try, Success, Failure}
 import scala.annotation.tailrec
 
@@ -23,7 +20,7 @@ object Utils {
   //visualização do ambiente 3D e aplicar os métodos desenvolvido (p.e.
   //scaleOctree);
 
-    def showPrompt(): Unit = {
+  def showPrompt(): Unit = {
     println("Please state the name of the configuration file without the extension: ")
   }
 
@@ -34,6 +31,10 @@ object Utils {
     println("Select any other number to show the output")
     println("Number:")
   }
+
+/*  def getInputFromUser(): Unit {
+
+  }*/
 
   //------------------------------------------------------------------------//
 
@@ -62,16 +63,6 @@ object Utils {
   def removeGreen(color: Color): Color = {
     val newColor = new Color(color.getRed,0.0,color.getBlue,color.getOpacity)
     newColor
-  }
-
-  def isItInt(s : String):Boolean = {
-    def makeInt(s: String): Try[Int] = {
-      Try(s.trim.toInt)
-    }
-    makeInt(s) match {
-      case Success(_) => true
-      case Failure(_) => false
-    }
   }
 
  def readFromFile(file: String): List[Node] = {

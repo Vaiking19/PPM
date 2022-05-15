@@ -26,19 +26,14 @@ class ControllerFirstWindow {
     fileChooser.setTitle("Open Resource File")
 
     val path = fileChooser.showOpenDialog(stage).getName
-    println(s"${path}")
 
-
-    val size: Double = slider1.getValue
-
-
-    val placement1:Placement = new Placement((0,0,0),size)
+    val placement1:Placement = new Placement((0,0,0),slider1.getValue)
     val fileObjects = getObjectsInsideBox(createBox(placement1),readFromFile(s"src/$path"))
+
     FxApp.images = new ImageCollection(worldRoot,fileObjects)
-
-
-    FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
     FxApp.images.updateWorld
+    FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
+    //FxApp.images.updateWorld
 
     val fxmlLoader2 = new FXMLLoader(getClass.getResource("Controller2.fxml"))
     val mainViewRoot: Parent = fxmlLoader2.load()
