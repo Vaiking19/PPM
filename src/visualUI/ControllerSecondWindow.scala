@@ -1,8 +1,7 @@
-import InitSubScene._
-import Utils._
+package visualUI
+
 import javafx.fxml.FXML
 import javafx.scene.{Node, SubScene}
-import javafx.scene.control._
 
 class ControllerSecondWindow {
 

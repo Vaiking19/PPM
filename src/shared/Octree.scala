@@ -1,3 +1,5 @@
+package shared
+
 sealed trait Octree[+A]
 
 case class OcNode[A](coords: A,

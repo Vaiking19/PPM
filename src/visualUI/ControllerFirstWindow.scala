@@ -1,6 +1,6 @@
+package visualUI
 
-import InitSubScene.worldRoot
-import Utils._
+
 import javafx.fxml._
 import javafx.scene._
 import javafx.scene.control._
@@ -35,7 +35,7 @@ class ControllerFirstWindow {
     val placement1:Placement = new Placement((0,0,0),slider1.getValue)
     val fileObjects = getObjectsInsideBox(createBox(placement1),readFromFile(s"src/$path"))
 
-    FxApp.images = new ImageCollection(worldRoot,fileObjects)
+    FxApp.images = new shared.ImageCollection(worldRoot,fileObjects)
     FxApp.images.updateWorld
     FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
     //FxApp.images.updateWorld
@@ -57,7 +57,7 @@ class ControllerFirstWindow {
     FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
     //FxApp.images.updateWorld
 
-    val fxmlLoader2 = new FXMLLoader(getClass.getResource("Controller2.fxml"))
+    val fxmlLoader2 = new FXMLLoader(getClass.getResource("visualUI/Controller2.fxml"))
     val mainViewRoot: Parent = fxmlLoader2.load()
 
     button1.getScene.setRoot(mainViewRoot)

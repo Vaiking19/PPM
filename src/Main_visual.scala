@@ -1,9 +1,10 @@
 
-import Utils.Placement
+import shared.Utils.Placement
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene._
 import javafx.stage.Stage
+import shared.{ImageCollection, Octree}
 
 class Main_visual extends Application {
 
@@ -14,7 +15,7 @@ class Main_visual extends Application {
 
     stage.setTitle("PPM Project 21/22")
     val fxmlLoader =
-      new FXMLLoader(getClass.getResource("Controller1.fxml"))
+      new FXMLLoader(getClass.getResource("visualUI/Controller1.fxml"))
     val mainViewRoot: Parent = fxmlLoader.load()
     val graphicScene = new Scene(mainViewRoot)
     stage.setScene(graphicScene)

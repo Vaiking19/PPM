@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1010.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSecondWindow">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1010.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualUI.ControllerSecondWindow">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="833.800048828125" minWidth="10.0" prefWidth="823.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="723.999951171875" minWidth="10.0" prefWidth="187.0" />

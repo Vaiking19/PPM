@@ -1,5 +1,5 @@
-/**
- * CameraView.java
+package shared; /**
+ * shared.CameraView.java
  *
  * Copyright (c) 2013-2016, F(X)yz
  * All rights reserved.
@@ -41,6 +41,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import shared.CameraTransformer;
 
 
 /**
