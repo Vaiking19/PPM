@@ -4,7 +4,9 @@ import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene._
 import javafx.stage.Stage
-
+/*
+Class utilizada para gerar a interface grafica
+ */
 class Main_visual extends Application {
 
   override def start(stage: Stage): Unit = {
