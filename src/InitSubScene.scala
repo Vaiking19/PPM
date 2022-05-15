@@ -5,7 +5,11 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.{Color, PhongMaterial}
 import javafx.scene.shape.{Cylinder, DrawMode, Line}
 import javafx.scene.transform.Rotate
-
+/*
+* Nesta classe sao declaradas todas as variaveis necessarias ao funcionamento das scenes,
+* Assim torna possivel o acesso por parte das funcoes que estejam em diversas classes sem
+* que seja necessario recorrer a criacao de variaveis globais
+*/
 object InitSubScene{
 
   //Materials to be applied to the 3D objects

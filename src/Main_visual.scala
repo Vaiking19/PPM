@@ -19,9 +19,7 @@ class Main_visual extends Application {
     val graphicScene = new Scene(mainViewRoot)
     stage.setScene(graphicScene)
     stage.show()
-
   }
-
 
   override def init(): Unit = {
     println("init")
@@ -30,12 +28,11 @@ class Main_visual extends Application {
   override def stop(): Unit = {
     println("\n=== You have closed the application ===")
   }
-
 }
 
 object FxApp {
-    var images:ImageCollection = _
-    var tree: Octree[Placement] = _
+  var images:ImageCollection = _
+  var tree: Octree[Placement] = _
 
 
   def main(args: Array[String]): Unit = {

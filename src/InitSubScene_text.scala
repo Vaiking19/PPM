@@ -4,6 +4,11 @@ import javafx.scene.paint.{Color, PhongMaterial}
 import javafx.scene.shape.{Box, Cylinder, DrawMode, Line}
 import javafx.scene.transform.Rotate
 import javafx.scene._
+/*
+* Nesta classe sao declaradas todas as funcoes necessarias ao funcionamento da interface de texto,
+* tal como na classe InitSubScene, torna possivel o acesso por parte das funcoes que estejam em
+* diversas classes sem que seja necessario recorrer a criacao de variaveis globais
+*/
 
 object InitSubScene_text {
 
@@ -46,30 +51,6 @@ object InitSubScene_text {
     wiredBox
   }
 
-//  def createCylinder(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Cylinder = {
-//    val cylinder1 = new Cylinder(0.5, 1, 10)
-//    cylinder1.setTranslateX(transX)
-//    cylinder1.setTranslateY(transY)
-//    cylinder1.setTranslateZ(transZ)
-//    cylinder1.setScaleX(scaleX)
-//    cylinder1.setScaleY(scaleY)
-//    cylinder1.setScaleZ(scaleZ)
-//    cylinder1.setMaterial(newColour(color1, color2, color3))
-//    cylinder1
-//  }
-//
-//  def createBox(transX: Int, transY: Int, transZ: Int, scaleX: Int, scaleY: Int, scaleZ: Int, color1: Int, color2: Int, color3: Int): Box = {
-//    val box1 = new Box(0.5, 1, 10)
-//    box1.setTranslateX(transX)
-//    box1.setTranslateY(transY)
-//    box1.setTranslateZ(transZ)
-//    box1.setScaleX(scaleX)
-//    box1.setScaleY(scaleY)
-//    box1.setScaleZ(scaleZ)
-//    box1.setMaterial(newColour(color1, color2, color3))
-//    box1
-//  }
-
   def createCamera(): PerspectiveCamera = {
     // Camera
     val camera = new PerspectiveCamera(true)
@@ -78,12 +59,10 @@ object InitSubScene_text {
 
   def createCameraTransformer(worldRoot: Group, x: Int, y: Int, z: Int, nearClip: Double, farClip: Double, transZ: Int, fieldView: Int, ryAngle: Double, rxAngle: Double, camera: PerspectiveCamera): CameraTransformer = {
     val cameraTransform = new CameraTransformer
-
     cameraTransform.setTranslate(x, y, z)
     cameraTransform.getChildren.add(camera)
     camera.setNearClip(nearClip)
     camera.setFarClip(farClip)
-
     camera.setTranslateZ(transZ)
     camera.setFieldOfView(fieldView)
     cameraTransform.ry.setAngle(ryAngle)
@@ -102,7 +81,6 @@ object InitSubScene_text {
   def createCameraView(subScene: SubScene, fitWidth: Int, fitHeight: Int, rxAngle: Int, setZ: Int, setY: Int, transZ: Int): CameraView = {
 
     val cameraView = new CameraView(subScene)
-
     cameraView.setFirstPersonNavigationEabled(true)
     cameraView.setFitWidth(fitWidth)
     cameraView.setFitHeight(fitHeight)
@@ -122,22 +100,15 @@ object InitSubScene_text {
 
   // ---- -------- --- -------SCENE COMPLETE ------ -- ---------- ----------- -----//
   def createScene(worldRoot: Group, width: Double, height: Double): (Scene,CameraView) = {
-
     //SUBSCENE
     val camera = createCamera()
     val subJohnCena = createSubscene(worldRoot, 800, 600, Color.WHITE, camera)
     val view = createCameraView(subJohnCena, 350, 225, -45, -100, -500, -50)
     view.startViewing
-
     val root = createRoot(subJohnCena, view)
-
     createCameraTransformer(worldRoot, 0, 0, 0, 0.1, 10000.0, -500, 20, -45.0, -45.0, camera)
-
     //SCENE
     val scenario = new Scene(root, width, height, true, SceneAntialiasing.BALANCED)
-
     (scenario,view)
   }
-
-
 }

@@ -18,15 +18,13 @@ object Utils {
   //Box and Cylinder are subclasses of Shape3D
   type Section = (Placement, List[Node]) //example: ( ((0.0,0.0,0.0), 2.0), List(new Cylinder(0.5, 1, 10)))
 
-  //T6 desenvolver uma text-based User Interface permitindo escolher o ficheiro
-  //de configuração, lançar (uma única vez antes de terminar a execução) a
-  //visualização do ambiente 3D e aplicar os métodos desenvolvido (p.e.
-  //scaleOctree);
-
-    def showPrompt(): Unit = {
+  //T6
+  //Executa um output para que o user indique qual o ficheiro a carregar
+  def showPrompt(): Unit = {
     println("Please state the name of the configuration file without the extension: ")
   }
 
+  //Executa um output para que o user selecione uma opcao
   def printChoose(): Unit = {
     println("Please choose a number: ")
     println("1 - OcScale")
@@ -35,21 +33,17 @@ object Utils {
     println("Number:")
   }
 
-  //------------------------------------------------------------------------//
-
+  //Funcao para atribuir uma nova cor com base em coordenadas RGB
   def newColour(red: Int, green: Int, blue: Int): PhongMaterial = {
     val new_colour = new PhongMaterial()
-
     val newRed = red.min(255)
     val newGreen = green.min(255)
     val newBlue = blue.min(255)
-
     new_colour.setDiffuseColor(Color.rgb(newRed, newGreen, newBlue))
     new_colour
   }
 
-  //--------------------------------------------------------------------------------//
-
+  //Aplica a filtro sepia
   def applySepiaToList(color: Color): Color = {
     val newRed = (0.4 * color.getRed +  0.77 * color.getGreen + 0.20 * color.getBlue).min(1.0)
     val newGreen = (0.35 * color.getRed +  0.69 * color.getGreen + 0.17 * color.getBlue).min(1.0)
@@ -59,11 +53,13 @@ object Utils {
     newColor
   }
 
+  //Remove a cor verde dos objecto
   def removeGreen(color: Color): Color = {
     val newColor = new Color(color.getRed,0.0,color.getBlue,color.getOpacity)
     newColor
   }
 
+  //verifica se a string dada como argumento corresponde a um numero inteiro
   def isItInt(s : String):Boolean = {
     def makeInt(s: String): Try[Int] = {
       Try(s.trim.toInt)
@@ -74,83 +70,78 @@ object Utils {
     }
   }
 
- def readFromFile(file: String): List[Node] = {
-   val bufferedSource = Source.fromFile(file)
+  //Funcao utilizada para fazer a leitura do ficheiro
+  def readFromFile(file: String): List[Node] = {
+    val bufferedSource = Source.fromFile(file) //carrega o ficheiro
+    var boxArr: Array[Shape3D] = Array() // array para guardar os objetos do tipo Box
+    var cyArr: Array[Shape3D] = Array() // array para guardar os objetos do tipo Cilindro
 
-   var boxArr: Array[Shape3D] = Array()
-   var cyArr: Array[Shape3D] = Array()
+    if (bufferedSource == null) { // valida se o ficheiro contem dados
+      println("The file chosen does not contain the necessary information. Please try another")
+    }
 
-   if (bufferedSource == null) {
-     println("The file chosen does not contain the necessary information. Please try another")
-   }
+    for (line <- bufferedSource.getLines) {  //carrega as linhas do ficheiro
+      if (!line.isEmpty || !line.isBlank) {
 
-   for (line <- bufferedSource.getLines) {
+        val new_item = line.split(" ")
+        val objName = new_item(0)
+        val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)", "").split(",")
+        val colourList = temp.toList.map(x => x.toInt)
 
-     if (!line.isEmpty || !line.isBlank) {
+        if (new_item.size > 2) { //cria objetos com atributos definidos no file
+          objName match {
+            case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)  // carrega os objetos do tipo Cilindro
+              cyArr.last.setTranslateX(new_item(2).toInt)
+              cyArr.last.setTranslateY(new_item(3).toInt)
+              cyArr.last.setTranslateZ(new_item(4).toInt)
+              cyArr.last.setScaleX(new_item(5).toDouble)
+              cyArr.last.setScaleY(new_item(6).toDouble)
+              cyArr.last.setScaleZ(new_item(7).toDouble)
+              cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
 
-       val new_item = line.split(" ")
-       val objName = new_item(0)
+            case "Box" => boxArr = boxArr :+ new Box(1, 1, 1) //carrega os objetos do tipo Box
+              boxArr.last.setTranslateX(new_item(2).toInt)
+              boxArr.last.setTranslateY(new_item(3).toInt)
+              boxArr.last.setTranslateZ(new_item(4).toInt)
+              boxArr.last.setScaleX(new_item(5).toDouble)
+              boxArr.last.setScaleY(new_item(6).toDouble)
+              boxArr.last.setScaleZ(new_item(7).toDouble)
+              boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
 
-       val temp = new_item(1).replaceAll("\\(", "").replaceAll("\\)", "").split(",")
-       val colourList = temp.toList.map(x => x.toInt)
+            case _ => println("This line does not match the necessary requirements") //a linha não contem informação que possa ser lida (vazia)
+          }
+        }
+        else {
+          objName match { // cria os objectos sem atributos definidos no file (são gerados com valores default)
+            case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
+              cyArr.last.setTranslateX(0)
+              cyArr.last.setTranslateY(0)
+              cyArr.last.setTranslateZ(0)
+              cyArr.last.setScaleX(1)
+              cyArr.last.setScaleY(1)
+              cyArr.last.setScaleZ(1)
+              cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
 
-       if (new_item.size > 2) {
-         objName match {
-           case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-             cyArr.last.setTranslateX(new_item(2).toInt)
-             cyArr.last.setTranslateY(new_item(3).toInt)
-             cyArr.last.setTranslateZ(new_item(4).toInt)
-             cyArr.last.setScaleX(new_item(5).toDouble)
-             cyArr.last.setScaleY(new_item(6).toDouble)
-             cyArr.last.setScaleZ(new_item(7).toDouble)
-             cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+            case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
+              boxArr.last.setTranslateX(0)
+              boxArr.last.setTranslateY(0)
+              boxArr.last.setTranslateZ(0)
+              boxArr.last.setScaleX(1)
+              boxArr.last.setScaleY(1)
+              boxArr.last.setScaleZ(1)
+              boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
 
-           case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-             boxArr.last.setTranslateX(new_item(2).toInt)
-             boxArr.last.setTranslateY(new_item(3).toInt)
-             boxArr.last.setTranslateZ(new_item(4).toInt)
-             boxArr.last.setScaleX(new_item(5).toDouble)
-             boxArr.last.setScaleY(new_item(6).toDouble)
-             boxArr.last.setScaleZ(new_item(7).toDouble)
-             boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
+            case _ => println("This line does not match the necessary requirements")
+          }
+        }
+      }
+    }
+    val objects: List[Node] = cyArr.toList.concat(boxArr.toList) // lista com todos os objetos lidos do ficheiro
+    bufferedSource.close // fecha o file
+    objects //retorna a lista de objetos
+  }
 
-           case _ => println("This line does not match the necessary requirements")
-         }
-       }
-       else {
-         objName match {
-           case "Cylinder" => cyArr = cyArr :+ new Cylinder(0.5, 1, 10)
-             cyArr.last.setTranslateX(0)
-             cyArr.last.setTranslateY(0)
-             cyArr.last.setTranslateZ(0)
-             cyArr.last.setScaleX(1)
-             cyArr.last.setScaleY(1)
-             cyArr.last.setScaleZ(1)
-             cyArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
-
-           case "Box" => boxArr = boxArr :+ new Box(1, 1, 1)
-             boxArr.last.setTranslateX(0)
-             boxArr.last.setTranslateY(0)
-             boxArr.last.setTranslateZ(0)
-             boxArr.last.setScaleX(1)
-             boxArr.last.setScaleY(1)
-             boxArr.last.setScaleZ(1)
-             boxArr.last.setMaterial(newColour(colourList(0), colourList(1), colourList(2)))
-
-           case _ => println("This line does not match the necessary requirements")
-         }
-       }
-     }
-   }
-   val objects: List[Node] = cyArr.toList.concat(boxArr.toList)
-   bufferedSource.close
-   objects
-
- }
-
-  //AUXILIAR
-  //FUNCAO PARA GERAR A LISTA DE OBJECTOS QUE ESTEJAM CONTIDOS DENTRO DE DETERMINADO BOX
-
+  // Cria uma lista de objectos que estejam contidos numa box e que não sejam intersectados
   def getObjectsInsideBox(box: Box, listObject: List[Node]): List[Node] =
     listObject match {
       case Nil => Nil
@@ -163,7 +154,7 @@ object Utils {
       }
     }
 
-
+  // Funcao que cria uma box em funçao do placement
   def createBox(placement: Placement):Box = {
     val sizeDaCox = placement._2
     val box = new Box(sizeDaCox, sizeDaCox, sizeDaCox)
@@ -176,7 +167,7 @@ object Utils {
     box
   }
 
-  //FUNCAO PARA GERAR UM ELEMENTO DO TIPO BOX PARA UMA DETERMINADA SECCAO
+  //funcao que gera uma lista das boxes criadas na função anterior
   def createNextBoxes(placement: Placement): List[Box] = {
     val size = placement._2 / 2.0
     val x = placement._1._1
@@ -201,12 +192,14 @@ object Utils {
 
     box1 :: box2 :: box3 :: box4 :: box5 :: box6 :: box7 :: box8 :: List()
   }
-
-  //FUNCAO PARA VALIDAR SE ALGUM DOS 8 SECCOES QUE PROSSEGUEM UM DETERMINADO NODO IRAO INTERSECTAR MAS NAO CONTER ALGUM ELEMENTO
-  //OU SEJA, VALIDA SE É POSSIVEL QUE O ELEMENTO CONTIDO PODERÁ VIR A SER PARTIDO EM 8 PARTES OU NAO
-  //CASO SEJA POSSIVEL SER PARTIDO EM 8 PARTES ENTAO RETORNA TRUE PARA QUE O NODO "PAI" SAIBA QUE PODERA PROCEDER EM DIVIDIR-SE
-  //CASO RETORNE FALSE O NODO PAI IRA RECEBER A INFORMAÇÃO DE QUE NAO SE PODERÁ REPARTIR E TERA DE SER ELE A FOLHA
+  /*
+  * FUNCAO PARA VALIDAR SE ALGUMA DAS 8 SECCOES QUE PROSSEGUEM UM DETERMINADO NODO INTERSECTAM MAS NAO CONTEEM ALGUM ELEMENTO
+  * OU SEJA, VALIDA SE É POSSIVEL QUE O ELEMENTO CONTIDO PODERÁ VIR A SER PARTIDO EM 8 PARTES OU NAO
+  * CASO SEJA POSSIVEL SER PARTIDO EM 8 PARTES ENTAO RETORNA TRUE PARA QUE O NODO "PAI" SAIBA QUE PODERA PROCEDER EM DIVIDIR-SE
+  * CASO RETORNE FALSE O NODO PAI IRA RECEBER A INFORMAÇÃO DE QUE NAO SE PODERÁ REPARTIR E TERA DE SER ELE A FOLHA
+  */
   @tailrec
+  */
   def childNodesIntersect(listBoxes: List[Box], listObjects: List[Node]): Boolean = {
     @tailrec
     def runThroughObjects(b: Box, listObjects: List[Node]): Boolean =
@@ -228,14 +221,8 @@ object Utils {
     }
   }
 
-  //---------------------------------------------------------------------//
 
-  /*
-    T2 criar uma octree de acordo com os modelos gráficos previamente carregados e permitir
-    a sua visualização (as partições espaciais são representadas com wired cubes). A octree
-    oct1 presente no código fornecido poderá ajudar na interpretação;
-    */
-
+  //T2
   //FUNCAO PARA GERAR TODAS AS OCTREES DAS 8 SECCOES QUE PROSSEGUEM DETERMINADO NODO
   def generateChild(listBoxes: List[Box], listObjects: List[Node], worldRoot: Group): List[Octree[Placement]] =
     listBoxes match {
@@ -272,14 +259,14 @@ object Utils {
     }
 
 
-  //Funcao para criar a OcTree como deve ser
+  //Funcao para gerar a OCTREE ( recebe um placement, uma lista de objectos e um grupo ***
   def makeTree(p: Placement, wiredListObjects: List[Node], worldRoot: Group): Octree[Placement] = {
 
     val box = createBox(p)
     worldRoot.getChildren.add(box)
     //WIRED BOX SO ACEITE OBJECTOS CONTIDOS SE NAO CONTIVER CORTA FORA OS OBJECTOS
 
-//    val wiredListObjects:List[Node] = getObjectsInsideBox(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
+    //    val wiredListObjects:List[Node] = getObjectsInsideBox(box,list,worldRoot)    //LISTA OBJECTOS DA WIREBOX
 
     if(wiredListObjects.isEmpty) return OcEmpty       //SOU VAZIO ? SOU OCEMPTY
 
@@ -299,8 +286,6 @@ object Utils {
     finalTree
   }
 
-  //-------------------------------------------------------------------//
-
   def treePlacement(oct: Octree[Placement]): Placement = {
     oct match {
       case OcEmpty => null
@@ -313,9 +298,8 @@ object Utils {
         val placement: Placement = (section._1._1, section._1._2)
         placement
     }
-
   }
-
+  //Funcao para escalar os objectos que estão dentro wiredbox
   def scaleList(fact : Double, list: List[Node]) : List[Node] = {
     list match {
       case Nil => Nil
@@ -332,20 +316,9 @@ object Utils {
     }
   }
 
-
-  //-------------------------------------------------------------------------------------//
-
-  //T3 permitir que durante a visualização e mediante movimento da câmera (o
-  //movimento é obtido, no código fornecido, clicando no botão esquerdo do
-  //rato), sejam visualmente identificados, através de alteração da cor da
-  //partição, as partições espaciais da octree que sejam visíveis a partir da
-  //câmera (i.e., que intersetam o seu volume de visualização). O código dado
-  //também fornece uma third person view (canto inferior direito) que permite
-  //visualizar a octree de diferentes perspetivas (através do rato),
-  //independentemente da posição da câmera;
+  //T3
 
   //função para que as partições mudem de cor quando a camera passar por cima das mesmas
-
   @tailrec
   def changeSectionColorIfCamInside(partitionsList: List[Node], camVolume: Cylinder): List[Node] = {
     partitionsList match {

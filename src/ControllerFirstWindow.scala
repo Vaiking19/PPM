@@ -5,38 +5,34 @@ import javafx.fxml._
 import javafx.scene._
 import javafx.scene.control._
 import javafx.stage._
-
+/*
+Classe correspondente à janela inicial, o "launcher" do programa, é aqui que será definido o
+tamanho da box inicial "wiredBox"
+ */
 class ControllerFirstWindow {
 
   @FXML private var button1: Button = _
   @FXML private var label1: Label = _
   @FXML private var slider1:Slider = _
 
-
+  //definir qual o tamanho com que queremos gerar a wiredbox
   def setSizeFirst(): Unit = {
     println("SLIDEEEEEER " + slider1.getValue)
     button1.setVisible(true)
     label1.setVisible(true)
   }
-
+  //abrir o explorador de ficheiros, gerar a Box, os elementos nela contidos e criar a octree..
   def OnButton1Clicked(): Unit = {
 
     val stage:Stage = new Stage()
     val fileChooser:FileChooser = new FileChooser()
     fileChooser.setTitle("Open Resource File")
-
     val path = fileChooser.showOpenDialog(stage).getName
     println(s"${path}")
-
-
     val size: Double = slider1.getValue
-
-
     val placement1:Placement = new Placement((0,0,0),size)
     val fileObjects = getObjectsInsideBox(createBox(placement1),readFromFile(s"src/$path"))
     FxApp.images = new ImageCollection(worldRoot,fileObjects)
-
-
     FxApp.tree = makeTree(placement1, FxApp.images.objects,FxApp.images.worldRoot)
     FxApp.images.updateWorld
 
