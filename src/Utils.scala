@@ -2,7 +2,9 @@ import scala.io.Source
 import javafx.scene.{Group, Node}
 import javafx.scene.paint.{Color, PhongMaterial}
 import javafx.scene.shape.{Box, Cylinder, DrawMode, Shape3D}
-import scala.util.{Try, Success, Failure}
+
+import java.nio.file.{Files, Paths}
+import scala.util.{Failure, Success, Try}
 import scala.annotation.tailrec
 
 object Utils {
@@ -32,9 +34,17 @@ object Utils {
     println("Number:")
   }
 
-/*  def getInputFromUser(): Unit {
-
-  }*/
+  def getInputFromUser(): String = {
+    showPrompt()
+    val userInput = scala.io.StdIn.readLine()
+    val fileExists = Files.exists(Paths.get("src/"+userInput+".txt"))
+    fileExists match {
+      case false => userInput
+      case _ =>
+        println("Invalid path/file, please enter another.")
+        getInputFromUser()
+    }
+  }
 
   //------------------------------------------------------------------------//
 
@@ -76,9 +86,7 @@ object Utils {
    }
 
    for (line <- bufferedSource.getLines) {
-
      if (!line.isEmpty || !line.isBlank) {
-
        val new_item = line.split(" ")
        val objName = new_item(0)
 
